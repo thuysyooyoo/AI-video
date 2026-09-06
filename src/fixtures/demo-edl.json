@@ -1,0 +1,97 @@
+{
+  "source": {
+    "clip": "raw/golden-src.mp4",
+    "durationSec": 8
+  },
+  "format": {
+    "w": 1080,
+    "h": 1920,
+    "fps": 30
+  },
+  "style": {
+    "captionColor": "#FFFFFF",
+    "highlightColor": "#39E508",
+    "accent": "#FF8C00"
+  },
+  "tracks": {
+    "captions": [
+      {
+        "text": "Đây là caption demo",
+        "startMs": 500,
+        "endMs": 3000,
+        "tokens": [
+          {
+            "text": "Đây ",
+            "fromMs": 500,
+            "toMs": 1000
+          },
+          {
+            "text": "là ",
+            "fromMs": 1000,
+            "toMs": 1400
+          },
+          {
+            "text": "caption ",
+            "fromMs": 1400,
+            "toMs": 2200
+          },
+          {
+            "text": "demo",
+            "fromMs": 2200,
+            "toMs": 3000
+          }
+        ]
+      },
+      {
+        "text": "Highlight theo từng từ",
+        "startMs": 3200,
+        "endMs": 6000,
+        "tokens": [
+          {
+            "text": "Highlight ",
+            "fromMs": 3200,
+            "toMs": 4000
+          },
+          {
+            "text": "theo ",
+            "fromMs": 4000,
+            "toMs": 4500
+          },
+          {
+            "text": "từng ",
+            "fromMs": 4500,
+            "toMs": 5200
+          },
+          {
+            "text": "từ",
+            "fromMs": 5200,
+            "toMs": 6000
+          }
+        ]
+      }
+    ],
+    "effects": [
+      {
+        "type": "punch-in",
+        "startMs": 3000,
+        "endMs": 5000,
+        "scale": 1.12
+      }
+    ],
+    "graphics": [
+      {
+        "type": "hook",
+        "startMs": 0,
+        "endMs": 3000,
+        "text": "HOOK 3 GIÂY ĐẦU"
+      },
+      {
+        "type": "cta",
+        "startMs": 6200,
+        "endMs": 8000,
+        "text": "FOLLOW ĐỂ XEM THÊM"
+      }
+    ],
+    "broll": []
+  }
+}

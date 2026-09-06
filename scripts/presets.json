@@ -1,0 +1,26 @@
+{
+  "thuy-style-oneshot": {
+    "captionBuilder": "summary",
+    "injectFullscreenBroll": true,
+    "stripEmojis": true,
+    "scrimMode": "blur-vignette",
+    "iconsEnabled": false,
+    "cardPlacement": "top-safe",
+    "captionMutualExclusion": true,
+    "allowBoxyCards": false,
+    "useHierarchicalHeadlines": true,
+    "dynamicBrollDuration": true
+  },
+  "classic": {
+    "captionBuilder": "karaoke",
+    "injectFullscreenBroll": false,
+    "stripEmojis": false,
+    "scrimMode": "subtle",
+    "iconsEnabled": true,
+    "cardPlacement": "center",
+    "captionMutualExclusion": false,
+    "allowBoxyCards": true,
+    "useHierarchicalHeadlines": false,
+    "dynamicBrollDuration": false
+  }
+}

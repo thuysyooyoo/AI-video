@@ -1,0 +1,14 @@
+node_modules/
+.venv/
+__pycache__/
+out/
+public/raw/*
+!public/raw/sample.mp4
+dataset-videos/
+analysis/
+.env
+*.zip
+.DS_Store
+Thumbs.db
+public/music/*
+dist/

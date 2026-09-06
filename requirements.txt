@@ -1,0 +1,13 @@
+# TISA AI EDITOR AGENT — Python dependencies
+# Install: pip install -r requirements.txt
+# Python 3.10+ required.
+
+numpy>=1.24
+opencv-python>=4.8        # cv2 — face zones, palette, motion, frame sampling
+faster-whisper>=1.0       # local word-level STT, no API key
+# scenedetect / librosa removed 2026-07-05 — not imported by any current script.
+
+# NOTE (external, NOT pip — must be on PATH):
+#   ffmpeg + ffprobe  — audio extract, duration probe, clip cut.
+#     Windows: winget install Gyan.FFmpeg   |  macOS: brew install ffmpeg
+#   Node.js 18+ + npm — Layer 2 (Remotion render). See package.json.

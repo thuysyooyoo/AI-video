@@ -1,0 +1,4 @@
+interface:
+  display_name: "TISA AI EDITOR AGENT"
+  short_description: "Tự động dựng video ngắn chuyên nghiệp bằng AI"
+  default_prompt: "Use $tisa-ai-editor-agent to edit my video automatically and render a verified final file."
