@@ -28,6 +28,15 @@ Skill này kích hoạt preset `thuy-style-oneshot` trong hệ thống dựng **
    - **B-roll fullscreen** 100% khung hình (1080×1920), giữ trọn vẹn theo độ dài câu thoại (dynamic duration).
    - **Cơ chế độc quyền hiển thị** (Mutual Exclusivity): Khi có headline hoặc B-roll → tự ẩn phụ đề transcript, không bao giờ bị đè chữ.
    - **Lớp phủ đáy**: Blur 14px + vignette tối 38% ở 30–36% chân video.
-   - **SFX** tự động cho mỗi lần headline/B-roll xuất hiện.
+   - **SFX phân tầng tăng năng lượng**: Đồng bộ chính xác theo 5 nhóm âm thanh chuẩn creator.
 
 4. **Phụ đề thoại** dùng chung engine nhảy chữ karaoke 4–6 từ/dòng, từ đang nói bôi vàng `#FFE600`, chữ thường sentence-case ~46px.
+
+5. **Quy chuẩn Sound Design & SFX (Bắt buộc đọc [references/sfx-sound-design.md](references/sfx-sound-design.md))**:
+   - Sử dụng đầy đủ 5 nhóm SFX theo ngữ cảnh:
+     - **1. Xuất hiện**: `swish` (headline lướt), `pop` (tag vàng), `magic-reveal` (bật mí ý tưởng), `cartoon-effect` (tình huống vui nhộn).
+     - **2. Chuột & Bàn phím**: `keyboard-click` (phím đơn đanh gọn), `typing-1` / `typing-2` (gõ phím code/prompt dồn dập), `mouse-click` (click chuột xác nhận).
+     - **3. Công nghệ**: `pip` (UI scanner AI), `hologram` (laser sci-fi), `error` (buzzer cảnh báo lỗi quay/sai lầm), `glitch` (nhiễu sóng chuyển đoạn).
+     - **4. Nhấn mạnh**: `highlight` (quẹt bút từ khóa vàng), `ding` (ý tưởng đắt giá), `hit` (cú đấm bass vào số liệu lớn 100%), `correct` (khẳng định chuẩn xác).
+     - **5. Chuyển cảnh & Foley**: `transition-punch`, `camera-shutter` (ảnh minh chứng), `paper-slide` (lật kịch bản).
+   - Quy tắc Pre-roll 65ms và cân bằng dải tần số để giữ trọn vẹn năng lượng nhưng tuyệt đối không át tiếng người nói.

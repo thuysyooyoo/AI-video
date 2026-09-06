@@ -44,7 +44,22 @@ const SFX_BY_TYPE: Record<string, SfxSpec> = {
   "dual-icon-cards": [["sfx/transition.mp3", "sfx/transition-punch.mp3"], 0.68],
   "diamond-label": [["sfx/pop-soft.mp3", "sfx/ding.mp3"], 0.48],
   "ad-comparison-scene": [["sfx/transition-punch.mp3", "sfx/boom.mp3"], 0.62],
-  "fullscreen-keyword": [["sfx/impact-soft.mp3", "sfx/whoosh-fast.mp3"], 0.72],
+  "fullscreen-keyword": [["sfx/impact-soft.mp3", "sfx/whoosh-fast.mp3", "sfx/hit.mp3"], 0.72],
+  // New Categories from Sound Design Knowledge Base:
+  typing: [["sfx/typing-1.mp3", "sfx/typing-2.mp3"], 0.62],
+  keyboard: [["sfx/keyboard-click.mp3", "sfx/typing-1.mp3"], 0.6],
+  mouse: [["sfx/mouse-click.mp3"], 0.52],
+  tech: [["sfx/pip.mp3", "sfx/hologram.mp3"], 0.6],
+  hologram: [["sfx/hologram.mp3"], 0.6],
+  error: [["sfx/error.mp3"], 0.68],
+  glitch: [["sfx/glitch.mp3"], 0.62],
+  highlight: [["sfx/highlight.mp3"], 0.58],
+  correct: [["sfx/correct.mp3", "sfx/ding.mp3"], 0.72],
+  cartoon: [["sfx/cartoon-effect.mp3"], 0.65],
+  swish: [["sfx/swish.mp3", "sfx/whoosh-fast.mp3"], 0.6],
+  magic: [["sfx/magic-reveal.mp3", "sfx/sparkle.mp3"], 0.65],
+  camera: [["sfx/camera-shutter.mp3"], 0.62],
+  paper: [["sfx/paper-slide.mp3"], 0.55],
 };
 
 /** Pick a variant for the n-th hit of a type; rotates so repeats differ. */
@@ -64,6 +79,8 @@ const SFX_WEIGHT: Record<string, number> = {
   "dual-icon-cards": 8, "diamond-label": 3,
   "ad-comparison-scene": 8,
   "fullscreen-keyword": 8,
+  typing: 5, keyboard: 5, mouse: 4, tech: 6, hologram: 6, error: 8, glitch: 7,
+  highlight: 5, correct: 8, cartoon: 5, swish: 5, magic: 6, camera: 6, paper: 5,
 };
 const MIN_GAP_MS = 1200; // refined spacing allowing responsive cues
 const PRE_ROLL_MS = 65;  // sound lands ~65ms BEFORE the visual ("impact" feel)
@@ -98,6 +115,27 @@ const SFX_FILE_BY_CUE: Record<Edl["tracks"]["sfx"][number]["sound"], string> = {
   // transition
   "transition-soft": "sfx/transition-soft.mp3",
   "transition-punch": "sfx/transition-punch.mp3",
+  // 1. Xuất hiện
+  swish: "sfx/swish.mp3",
+  "magic-reveal": "sfx/magic-reveal.mp3",
+  "cartoon-effect": "sfx/cartoon-effect.mp3",
+  // 2. Chuột & Bàn phím
+  "keyboard-click": "sfx/keyboard-click.mp3",
+  "typing-1": "sfx/typing-1.mp3",
+  "typing-2": "sfx/typing-2.mp3",
+  "mouse-click": "sfx/mouse-click.mp3",
+  // 3. Công nghệ
+  pip: "sfx/pip.mp3",
+  hologram: "sfx/hologram.mp3",
+  error: "sfx/error.mp3",
+  glitch: "sfx/glitch.mp3",
+  // 4. Nhấn mạnh
+  highlight: "sfx/highlight.mp3",
+  hit: "sfx/impact-hard.mp3",
+  correct: "sfx/correct.mp3",
+  // 5. Chuyển cảnh & Foley
+  "camera-shutter": "sfx/camera-shutter.mp3",
+  "paper-slide": "sfx/paper-slide.mp3",
 };
 
 export const SfxLayer: React.FC<{

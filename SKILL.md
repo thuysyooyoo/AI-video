@@ -19,6 +19,7 @@ description: Tự động dựng video ngắn bằng TISA AI EDITOR AGENT chạy
 - Dựng b-roll + hook: đọc [references/workflow-broll-hook.md](references/workflow-broll-hook.md).
 - Chọn phong cách: đọc [references/style-menu.md](references/style-menu.md).
 - So sánh 2 preset dựng (thuy-style-oneshot / classic): đọc [references/style-presets.md](references/style-presets.md).
+- Quy chuẩn Sound Design & 5 nhóm SFX tăng năng lượng: đọc [references/sfx-sound-design.md](references/sfx-sound-design.md).
 - Vận hành, review, sửa và xử lý nhiều video: đọc [references/quy-trinh-van-hanh.md](references/quy-trinh-van-hanh.md).
 - Khi người dùng cần prompt sao chép: đọc [references/bo-prompt-mau.md](references/bo-prompt-mau.md).
 

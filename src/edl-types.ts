@@ -64,6 +64,16 @@ export const sfxCueSchema = z.object({
     "ding", "bell-bright", "sparkle",
     // transition
     "transition-soft", "transition-punch",
+    // 1. Xuất hiện
+    "swish", "magic-reveal", "cartoon-effect",
+    // 2. Chuột & Bàn phím
+    "keyboard-click", "typing-1", "typing-2", "mouse-click",
+    // 3. Công nghệ
+    "pip", "hologram", "error", "glitch",
+    // 4. Nhấn mạnh
+    "highlight", "hit", "correct",
+    // 5. Chuyển cảnh & Foley
+    "camera-shutter", "paper-slide",
   ]),
   volume: z.number().default(0.6),
   priority: z.number().default(5),
