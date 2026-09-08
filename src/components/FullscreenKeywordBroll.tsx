@@ -58,16 +58,16 @@ export const FullscreenKeywordBroll: React.FC<{
     <AbsoluteFill
       style={{
         opacity: e,
-        backgroundColor: "#08090C",
+        backgroundColor: "#000000",
         justifyContent: "center",
         alignItems: "center",
         overflow: "hidden",
       }}
     >
-      {/* Cinematic radial gradient background with subtle accent glow */}
+      {/* Sleek Pure Black Background */}
       <AbsoluteFill
         style={{
-          background: `radial-gradient(circle at 50% 48%, ${accent}28 0%, rgba(10,12,18,0.88) 55%, #050608 100%)`,
+          backgroundColor: "#000000",
         }}
       />
 
@@ -75,30 +75,12 @@ export const FullscreenKeywordBroll: React.FC<{
       <div
         style={{
           position: "absolute",
-          inset: 60,
-          border: `1px solid rgba(255,255,255,0.08)`,
-          borderRadius: 32,
+          inset: 48,
+          border: `1px solid rgba(255,255,255,0.06)`,
+          borderRadius: 28,
           pointerEvents: "none",
         }}
       />
-      <div
-        style={{
-          position: "absolute",
-          top: 76,
-          left: "50%",
-          transform: "translateX(-50%)",
-          fontFamily: BODY_FONT,
-          fontSize: 24,
-          fontWeight: 700,
-          letterSpacing: 4,
-          color: "#FFE600",
-          textTransform: "uppercase",
-          opacity: 0.9,
-          textShadow: "0 0 16px rgba(255,230,0,0.4)",
-        }}
-      >
-        FEATURE FOCUS
-      </div>
 
       {/* Main Kinetic Content */}
       <div
@@ -130,10 +112,12 @@ export const FullscreenKeywordBroll: React.FC<{
           }}
         >
           {titleWords.map((w, idx) => {
-            const clean = w.toUpperCase();
+            const clean = w.replace(/[“”,.?!]/g, "").toUpperCase();
             let isHighlight = false;
             if (is3Loi && (clean === "3" || clean === "LỖI")) isHighlight = true;
             if (isCatBo && (clean === "KHOẢNG" || clean === "LẶNG")) isHighlight = true;
+            if (/\d+/.test(clean)) isHighlight = true;
+            if (clean === "AUTO" || clean === "MIỄN" || clean === "BẮT" || clean === "BUỘC" || clean === "THÔNG" || clean === "TIN") isHighlight = true;
             return (
               <span
                 key={idx}
@@ -231,7 +215,7 @@ export const FullscreenKeywordBroll: React.FC<{
                       textShadow: "0 4px 14px rgba(0,0,0,0.85)",
                     }}
                   >
-                    {item}
+                    {item.replace(/^\d+[\.\-\s\/]+\s*/, '')}
                   </div>
                 </div>
               );

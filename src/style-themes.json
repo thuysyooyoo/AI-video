@@ -1,5 +1,23 @@
 {
   "_doc": "SINGLE SOURCE of per-theme material+color tokens. Read by Python generate-edl.py and imported by TS theme.ts. Field names mirror styleRecipeSchema in src/edl-types.ts. Themes are design-system recipes: color + material + caption + motion, not just palettes.",
+  "anh-sac": {
+    "surface": "solid-tint",
+    "shadowMode": "hard",
+    "glassOpacity": 0.08,
+    "scrimAlpha": 0.12,
+    "cardRadius": 24,
+    "blurPx": 12,
+    "borderIntensity": 0.25,
+    "captionStrokePx": 3,
+    "motionVoice": "punch",
+    "entryAnimFamily": "spring",
+    "textFx": "solid",
+    "captionCase": "upper",
+    "accent": "#FF6B00",
+    "accent2": "#1A1A1A",
+    "highlightColor": "#FFE600",
+    "captionColor": "#FFFFFF"
+  },
   "sunset": {
     "surface": "glass-light",
     "shadowMode": "soft",

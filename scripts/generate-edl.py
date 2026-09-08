@@ -333,7 +333,8 @@ def dedup_overlap(graphics, dur, min_gap_ms=120, min_show_ms=1300):
     Keeps the dense plan dense while guaranteeing no stacking."""
     hook = [g for g in graphics if g["type"] == "hook"]
     cta = [g for g in graphics if g["type"] == "cta"]
-    rest = sorted([g for g in graphics if g["type"] not in ("hook", "cta")],
+    badges = [g for g in graphics if g["type"] == "number-badge"]
+    rest = sorted([g for g in graphics if g["type"] not in ("hook", "cta", "number-badge")],
                   key=lambda x: x["startMs"])
     hook_end = max((h["endMs"] for h in hook), default=0)
     cta_start = min((c["startMs"] for c in cta), default=int(dur * 1000))
@@ -360,7 +361,7 @@ def dedup_overlap(graphics, dur, min_gap_ms=120, min_show_ms=1300):
         g["startMs"], g["endMs"] = start, end
         kept.append(g)
         last_end = end
-    out = hook + kept + cta
+    out = hook + kept + badges + cta
     out.sort(key=lambda x: x["startMs"])
     return out
 
@@ -371,7 +372,10 @@ ALLOWED_TYPES = {"kinetic-statement", "mask-reveal", "glass-strip", "path-mark",
                  "step-flow", "comparison", "list-reveal", "lower-third-pro",
                  "info-table", "stat-compare",
                  "premium-roadmap", "neon-icon-card", "negative-slash-card",
-                 "dual-icon-cards", "diamond-label", "fullscreen-keyword"}
+                 "dual-icon-cards", "diamond-label", "fullscreen-keyword",
+                 # Hierarchical Headlines & Anh-sac style graphics
+                 "3-tier", "stat-punch", "split-contrast", "tag-headline",
+                 "grid-flat-card", "number-badge", "kinetic-pop", "staggered-lines"}
 DEFAULT_DUR_MS = 1900  # default on-screen time per graphic (shorter = denser)
 
 
@@ -394,8 +398,16 @@ def plan_item_to_graphic(item):
     if t not in ALLOWED_TYPES:
         return None
     start = int(float(item.get("sec", 0)) * 1000)
-    g = {"type": t, "startMs": start, "endMs": start + DEFAULT_DUR_MS,
+    dur_item = item.get("durMs") or (8500 if t in ("3-tier", "stat-punch", "split-contrast", "tag-headline") else (7000 if t in ("grid-flat-card", "number-badge") else DEFAULT_DUR_MS))
+    g = {"type": t, "startMs": start, "endMs": start + dur_item,
          "text": item.get("text", "")}
+    # copy headline & anh-sac specific fields
+    for k in ("header", "keyword", "tag", "topText", "bottomText", "highlightWord",
+              "secondaryText", "iconType"):
+        if item.get(k):
+            g[k] = str(item[k])
+    if isinstance(item.get("numberValue"), (int, float)):
+        g["numberValue"] = int(item["numberValue"])
     # enum-validated fields
     if t == "path-mark":
         g["kind"] = item.get("kind") if item.get("kind") in VALID_KIND else "underline"
@@ -493,12 +505,62 @@ def plan_item_to_graphic(item):
     return g
 
 
+def auto_pick_bgm(transcript_text, theme_key="sunset", preset="thuy-style-oneshot"):
+    """
+    Select appropriate BGM from public/bgm based on text keywords, theme and preset.
+    Returns relative path to public/ (e.g. 'bgm/02_giao_duc_kien_thuc/Kendrick Lamar - Not Like Us (Instrumental).mp3')
+    """
+    text_lower = (transcript_text or "").lower()
+
+    # Category 1: Emotional Storytelling
+    cat1_keywords = ["tâm sự", "kỷ niệm", "ngày xưa", "bài học", "cảm xúc", "nỗi buồn", "trải nghiệm", "thất bại", "chia tay", "gia đình", "bạn bè", "hối tiếc", "nhận ra", "cuộc đời", "tuổi trẻ", "quá khứ", "nước mắt", "cô đơn"]
+    cat1_score = sum(1 for kw in cat1_keywords if kw in text_lower)
+
+    # Category 2: Educational / Knowledge / Tech
+    cat2_keywords = ["hướng dẫn", "cách làm", "bí quyết", "mẹo", "tips", "công cụ", "ai", "chatgpt", "lập trình", "kiếm tiền", "kinh doanh", "marketing", "sai lầm", "chiến lược", "tư duy", "hiệu suất", "quy trình", "tự động hóa", "kênh", "video", "editor", "bí mật", "phương pháp", "thực chiến"]
+    cat2_score = sum(1 for kw in cat2_keywords if kw in text_lower)
+
+    # Category 3: Vlog / Day in life
+    cat3_keywords = ["một ngày", "hôm nay", "du lịch", "cafe", "ăn uống", "unboxing", "outfit", "dạo phố", "vlog", "thói quen", "cuối tuần", "chill", "đi chơi", "buổi sáng"]
+    cat3_score = sum(1 for kw in cat3_keywords if kw in text_lower)
+
+    # Category 4: Motivation / Energy / Success
+    cat4_keywords = ["thành công", "kỷ luật", "cố gắng", "nỗ lực", "dậy sớm", "không từ bỏ", "thay đổi", "động lực", "tập luyện", "thể thao", "gym", "kiên trì", "mục tiêu", "bứt phá", "chiến thắng", "quyết tâm"]
+    cat4_score = sum(1 for kw in cat4_keywords if kw in text_lower)
+
+    scores = {
+        "01_ke_chuyen_cam_xuc": cat1_score,
+        "02_giao_duc_kien_thuc": cat2_score,
+        "03_vlog_day_in_life": cat3_score,
+        "04_dong_luc_cam_xuc": cat4_score
+    }
+
+    best_cat = max(scores, key=scores.get)
+    if scores[best_cat] == 0:
+        if preset == "anh-sac-podcast":
+            best_cat = "02_giao_duc_kien_thuc"
+        elif theme_key in ("synthwave", "cyber", "punch"):
+            best_cat = "04_dong_luc_cam_xuc"
+        elif theme_key in ("fresh", "bloom"):
+            best_cat = "03_vlog_day_in_life"
+        else:
+            best_cat = "02_giao_duc_kien_thuc"
+
+    category_defaults = {
+        "01_ke_chuyen_cam_xuc": "bgm/01_ke_chuyen_cam_xuc/Gibran Alcocer - Idea 15.mp3",
+        "02_giao_duc_kien_thuc": "bgm/02_giao_duc_kien_thuc/Kendrick Lamar - Not Like Us (Instrumental).mp3",
+        "03_vlog_day_in_life": "bgm/03_vlog_day_in_life/Arctic Monkeys - I Wanna Be Yours (Instrumental).mp3",
+        "04_dong_luc_cam_xuc": "bgm/04_dong_luc_cam_xuc/VOJ & Narvent - Memory Reboot.mp3",
+    }
+    return category_defaults.get(best_cat, "bgm/02_giao_duc_kien_thuc/Kendrick Lamar - Not Like Us (Instrumental).mp3")
+
+
 def main():
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import edl_passes as ep
     ap = argparse.ArgumentParser()
     ap.add_argument("--clip", default="raw/talkinghead.mp4")
-    ap.add_argument("--preset", default="thuy-style-oneshot", choices=["thuy-style-oneshot", "classic"],
+    ap.add_argument("--preset", default="thuy-style-oneshot", choices=["thuy-style-oneshot", "thuy-style-nhieu-canh", "classic", "anh-sac-podcast"],
                     help="Editing style preset to use.")
     ap.add_argument("--model", default="local", help="reserved for local CLI providers")
     ap.add_argument("--llm", default="offline", choices=["claude-cli", "offline", "prefed"],
@@ -512,6 +574,12 @@ def main():
                     help="multimodal analyze + pro model + loop critique (slower, smarter)")
     ap.add_argument("--force-regen", action="store_true",
                     help="overwrite edl.json even if it exists (discards manual edits)")
+    ap.add_argument("--bgm", default="auto",
+                    help="background music relative path under public/, 'auto' to choose by theme/text, or 'none' to disable")
+    ap.add_argument("--bgm-volume", type=float, default=0.22,
+                    help="BGM volume (default: 0.22 for talking-head)")
+    ap.add_argument("--no-bgm", action="store_true",
+                    help="disable background music completely")
     ap.add_argument("--out-dir", default=str(OUT))
     ap.add_argument("--public-dir", default=str(PUBLIC))
     a = ap.parse_args()
@@ -542,12 +610,12 @@ def main():
             host_plan = {}
 
     # Recipe & Theme preparation
-    theme_key = "sunset"
-    if a.llm == "offline":
-        from local_llm import offline_strategy
+    theme_key = "anh-sac" if a.preset == "anh-sac-podcast" else "sunset"
+    if a.llm == "offline" and a.preset != "anh-sac-podcast":
+        from local_llm import offline_analyze, offline_strategy
         theme_key = offline_strategy(offline_analyze(full_text, dur), dur).get("theme", "sunset")
     elif a.llm == "prefed" and host_plan.get("strategy"):
-        theme_key = host_plan["strategy"].get("theme", "sunset")
+        theme_key = host_plan["strategy"].get("theme", theme_key)
 
     # Hierarchical Summary Captions (default) vs Karaoke
     if host_plan.get("summaryCaptions"):
@@ -667,33 +735,39 @@ def main():
             # GAP C: scale capped at 1.1 (constraint ≤1.12)
             zooms.append({"type": "punch-in", "startMs": z0, "endMs": z0 + 2000, "scale": 1.1})
 
-    # Section transitions: light zoom + short color-wipe at genuine label changes.
-    # These are caps, not floors: only label boundaries, max 3, spaced ≥8s.
-    prev_label = None
-    section_zooms_added = 0
+    # Section transitions: light zoom + diverse viral transition at genuine label changes.
+    # Accepts host_plan["transitions"] when supplied, else rotates 2-3 consistent transitions.
     transitions = []
-    _last_section_ms = -99999
-    for s in segs:
-        lbl = s.get("label")
-        start_ms = int(s.get("startSec", 0) * 1000)
-        if (lbl and lbl != prev_label and prev_label is not None
-                and section_zooms_added < 3
-                and start_ms - _last_section_ms >= 8000):
-            # light punch-in at section boundary: scale 1.08 (softer than energy zoom)
-            zooms.append({"type": "punch-in", "startMs": start_ms, "endMs": start_ms + 1500, "scale": 1.08})
-            # zoom-blur: soft radial glow pulse — color-wipe was removed (an opaque
-            # full-frame plate sweeping over the speaker reads as a render glitch)
-            t_start = max(0, start_ms - 180)
-            transitions.append({
-                "type": "zoom-blur",
-                "startMs": t_start,
-                "endMs": t_start + 620,
-                "intensity": 0.8,
-                "colorRole": "accent" if section_zooms_added % 2 == 0 else "accent2",
-            })
-            section_zooms_added += 1
-            _last_section_ms = start_ms
-        prev_label = lbl
+    if host_plan.get("transitions"):
+        transitions = host_plan["transitions"]
+    else:
+        if a.preset == "anh-sac-podcast":
+            TRANSITION_PALETTE = ["debris-shatter", "quick-cut", "color-flash", "swipe-left"]
+        else:
+            TRANSITION_PALETTE = ["zoom-blur", "whip-pan", "swipe-left", "color-flash", "mask-circle"]
+        prev_label = None
+        section_zooms_added = 0
+        _last_section_ms = -99999
+        for s in segs:
+            lbl = s.get("label")
+            start_ms = int(s.get("startSec", 0) * 1000)
+            if (lbl and lbl != prev_label and prev_label is not None
+                    and section_zooms_added < 3
+                    and start_ms - _last_section_ms >= 8000):
+                zooms.append({"type": "punch-in", "startMs": start_ms, "endMs": start_ms + 1500, "scale": 1.08})
+                t_start = max(0, start_ms - 180)
+                t_type = TRANSITION_PALETTE[section_zooms_added % len(TRANSITION_PALETTE)]
+                transitions.append({
+                    "type": t_type,
+                    "startMs": t_start,
+                    "endMs": t_start + 620,
+                    "intensity": 0.8,
+                    "direction": "left" if t_type in ("swipe-left", "whip-pan") else "up",
+                    "colorRole": "accent" if section_zooms_added % 2 == 0 else "accent2",
+                })
+                section_zooms_added += 1
+                _last_section_ms = start_ms
+            prev_label = lbl
 
     # cap illus-mark to avoid the "random circles/effects everywhere" feel.
     # Drop circle-draw (needs a real object to wrap) + starburst (reads as a stray
@@ -712,8 +786,34 @@ def main():
         pruned.append(g)
     graphics = pruned
 
-    # Inject 1-2 Fullscreen Keyword B-rolls if not already in graphics (1 clip co 1-2 broll)
-    if a.preset != "classic":
+    # Inject 1-2 B-rolls / Graphic Cards if not already in graphics
+    if a.preset == "anh-sac-podcast":
+        broll_count = sum(1 for g in graphics if g.get("type") in ("grid-flat-card", "fullscreen-keyword"))
+        if broll_count == 0 and dur >= 15:
+            b1_ms = int(dur * 0.35 * 1000)
+            b2_ms = int(dur * 0.72 * 1000)
+            km1 = min(analysis.get("keyMoments", []), key=lambda k: abs(k.get("sec", 0) * 1000 - b1_ms), default=None)
+            km2 = min(analysis.get("keyMoments", []), key=lambda k: abs(k.get("sec", 0) * 1000 - b2_ms), default=None)
+            graphics.append({
+                "type": "grid-flat-card",
+                "startMs": b1_ms,
+                "endMs": b1_ms + 2600,
+                "text": (km1.get("keyword") if km1 else "MỚI XÂY KÊNH").upper(),
+                "secondaryText": "Tối ưu góc quay",
+                "iconType": "crane",
+                "bottomText": "TÌNH HUỐNG ẤY HÃY ĐẶT THÊM NHIỀU GÓC QUAY",
+            })
+            if dur >= 28:
+                graphics.append({
+                    "type": "grid-flat-card",
+                    "startMs": b2_ms,
+                    "endMs": b2_ms + 2600,
+                    "text": (km2.get("keyword") if km2 else "THIẾU SOUND EFFECT").upper(),
+                    "secondaryText": "Sound effect",
+                    "iconType": "audio-wave",
+                    "bottomText": "THAY VÌ CHỈ ĐỂ ÂM THANH GỐC",
+                })
+    elif a.preset != "classic":
         broll_kw_count = sum(1 for g in graphics if g.get("type") == "fullscreen-keyword")
         if broll_kw_count == 0 and dur >= 15:
             # B-roll 1 around 30-38% duration
@@ -789,6 +889,40 @@ def main():
             "broll": [],
         },
     }
+
+    # Background music (BGM) handling
+    bgm_obj = None
+    if not a.no_bgm and a.bgm not in ("none", "off", "no"):
+        if host_plan.get("music"):
+            bgm_obj = host_plan["music"]
+        elif a.bgm and a.bgm != "auto":
+            bgm_src = a.bgm.replace("\\", "/")
+            if bgm_src.startswith("public/"):
+                bgm_src = bgm_src[len("public/"):]
+            bgm_obj = {
+                "src": bgm_src,
+                "volume": a.bgm_volume,
+                "clipVolume": 1.0,
+                "loop": True,
+                "startSec": 0,
+                "fadeOutSec": 1.5,
+            }
+        else:
+            auto_track = auto_pick_bgm(full_text, theme_key, a.preset)
+            if auto_track and (public_dir / auto_track).exists():
+                bgm_obj = {
+                    "src": auto_track,
+                    "volume": a.bgm_volume,
+                    "clipVolume": 1.0,
+                    "loop": True,
+                    "startSec": 0,
+                    "fadeOutSec": 1.5,
+                }
+                print(f"      bgm: auto-selected soundtrack -> {auto_track} (vol={a.bgm_volume})")
+
+    if bgm_obj:
+        edl["music"] = bgm_obj
+
     # machine output always goes to edl.generated.json; edl.json is the editor's
     # working copy — only overwritten when it carries no manual edits (i.e. it
     # still matches the previous generated output) or with --force-regen

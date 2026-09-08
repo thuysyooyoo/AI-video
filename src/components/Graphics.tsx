@@ -42,6 +42,21 @@ import { useStyle } from "../style-context";
 import { pickEmphasisIndex } from "../text-emphasis";
 import { BrollHookTitle, BrollSubHook, BrollCta } from "./BrollHook";
 import { FullscreenKeywordBroll } from "./FullscreenKeywordBroll";
+import {
+  ThreeTierHeadline,
+  StatPunchHeadline,
+  SplitContrastHeadline,
+  TagHeadline,
+  KineticPopHeadline,
+  StaggeredLinesHeadline,
+} from "./Captions";
+import {
+  GlowAmbientHeadline,
+  AsymmetricTrioHeadline,
+  StackedContrastHeadline,
+  MultiBlockFlowHeadline,
+} from "./AnhSacKineticTypo";
+import { GridFlatCard, NumberBadge } from "./GridFlatCard";
 
 export const GraphicLayer: React.FC<{
   graphic: Graphic;
@@ -207,11 +222,227 @@ export const GraphicLayer: React.FC<{
         />
       );
       break;
+    case "3-tier":
+      node = (
+        <ThreeTierHeadline
+          cap={{
+            text: graphic.text,
+            startMs: graphic.startMs,
+            endMs: graphic.endMs,
+            keywordIdx: -1,
+            headlineStyle: "3-tier",
+            header: graphic.header,
+            keyword: graphic.keyword,
+            sub: graphic.subtitle,
+          }}
+          accent={accent}
+        />
+      );
+      break;
+    case "stat-punch":
+      node = (
+        <StatPunchHeadline
+          cap={{
+            text: graphic.text,
+            startMs: graphic.startMs,
+            endMs: graphic.endMs,
+            keywordIdx: -1,
+            headlineStyle: "stat-punch",
+            header: graphic.header,
+            keyword: graphic.keyword,
+            sub: graphic.subtitle,
+          }}
+          accent={accent}
+        />
+      );
+      break;
+    case "split-contrast":
+      node = (
+        <SplitContrastHeadline
+          cap={{
+            text: graphic.text,
+            startMs: graphic.startMs,
+            endMs: graphic.endMs,
+            keywordIdx: -1,
+            headlineStyle: "split-contrast",
+            topText: graphic.topText || graphic.header,
+            bottomText: graphic.bottomText || graphic.subtitle,
+            highlightWord: graphic.highlightWord || graphic.keyword,
+          }}
+          accent={accent}
+        />
+      );
+      break;
+    case "tag-headline":
+      node = (
+        <TagHeadline
+          cap={{
+            text: graphic.text,
+            startMs: graphic.startMs,
+            endMs: graphic.endMs,
+            keywordIdx: -1,
+            headlineStyle: "tag-headline",
+            tag: graphic.tag,
+            header: graphic.header,
+            keyword: graphic.keyword,
+            highlightWord: graphic.highlightWord || graphic.keyword,
+            sub: graphic.subtitle,
+          }}
+          accent={accent}
+          highlight={recipe.highlightColor}
+        />
+      );
+      break;
+    case "grid-flat-card":
+      node = (
+        <GridFlatCard
+          title={graphic.text || graphic.header || ""}
+          secondaryText={graphic.secondaryText}
+          iconType={graphic.iconType ?? "timeline"}
+          subtitle={graphic.bottomText || graphic.subtitle}
+          accent={accent}
+          accent2={accent2}
+        />
+      );
+      break;
+    case "number-badge":
+      node = (
+        <NumberBadge
+          number={graphic.numberValue ?? graphic.value ?? 1}
+          accent={accent}
+        />
+      );
+      break;
+    case "kinetic-pop":
+      node = (
+        <KineticPopHeadline
+          cap={{
+            text: graphic.text,
+            startMs: graphic.startMs,
+            endMs: graphic.endMs,
+            keywordIdx: -1,
+            headlineStyle: "kinetic-pop",
+            header: graphic.header,
+            keyword: graphic.keyword,
+            highlightWord: graphic.highlightWord || graphic.keyword,
+          }}
+          accent={accent}
+          highlight={recipe.highlightColor}
+        />
+      );
+      break;
+    case "staggered-lines":
+      node = (
+        <StaggeredLinesHeadline
+          cap={{
+            text: graphic.text,
+            startMs: graphic.startMs,
+            endMs: graphic.endMs,
+            keywordIdx: -1,
+            headlineStyle: "staggered-lines",
+            header: graphic.header,
+            keyword: graphic.keyword,
+            sub: graphic.subtitle,
+          }}
+          accent={accent}
+          highlight={recipe.highlightColor}
+        />
+      );
+      break;
+    case "glow-ambient":
+      node = (
+        <GlowAmbientHeadline
+          cap={{
+            text: graphic.text,
+            startMs: graphic.startMs,
+            endMs: graphic.endMs,
+            keywordIdx: -1,
+            headlineStyle: "glow-ambient",
+            header: graphic.header,
+            keyword: graphic.keyword,
+            sub: graphic.subtitle || (graphic as any).sub,
+          }}
+          position={graphic.anchor === "bottom" ? "bottom" : "top"}
+          accent={accent}
+        />
+      );
+      break;
+    case "asymmetric-trio":
+      node = (
+        <AsymmetricTrioHeadline
+          cap={{
+            text: graphic.text,
+            startMs: graphic.startMs,
+            endMs: graphic.endMs,
+            keywordIdx: -1,
+            headlineStyle: "asymmetric-trio",
+            header: graphic.header,
+            keyword: graphic.keyword,
+            sub: graphic.subtitle || (graphic as any).sub,
+          }}
+          position={graphic.anchor === "bottom" ? "bottom" : "top"}
+          accent={accent}
+          highlight={recipe.highlightColor}
+        />
+      );
+      break;
+    case "stacked-contrast":
+      node = (
+        <StackedContrastHeadline
+          cap={{
+            text: graphic.text,
+            startMs: graphic.startMs,
+            endMs: graphic.endMs,
+            keywordIdx: -1,
+            headlineStyle: "stacked-contrast",
+            header: graphic.header,
+            keyword: graphic.keyword,
+            sub: graphic.subtitle || (graphic as any).sub,
+          }}
+          position={graphic.anchor === "bottom" ? "bottom" : "top"}
+          accent={accent}
+          highlight={recipe.highlightColor}
+        />
+      );
+      break;
+    case "multiblock-flow":
+      node = (
+        <MultiBlockFlowHeadline
+          cap={{
+            text: graphic.text,
+            startMs: graphic.startMs,
+            endMs: graphic.endMs,
+            keywordIdx: -1,
+            headlineStyle: "multiblock-flow",
+            header: graphic.header,
+            keyword: graphic.keyword,
+            sub: graphic.subtitle || (graphic as any).sub,
+          }}
+          position={graphic.anchor === "bottom" ? "bottom" : "top"}
+          accent={accent}
+          highlight={recipe.highlightColor}
+        />
+      );
+      break;
     default:
       node = null;
   }
   if (!node) return null;
-  if (graphic.type === "fullscreen-keyword") {
+  if (
+    graphic.type === "fullscreen-keyword" ||
+    graphic.type === "3-tier" ||
+    graphic.type === "stat-punch" ||
+    graphic.type === "split-contrast" ||
+    graphic.type === "tag-headline" ||
+    graphic.type === "grid-flat-card" ||
+    graphic.type === "number-badge" ||
+    graphic.type === "kinetic-pop" ||
+    graphic.type === "staggered-lines" ||
+    graphic.type === "glow-ambient" ||
+    graphic.type === "asymmetric-trio" ||
+    graphic.type === "stacked-contrast" ||
+    graphic.type === "multiblock-flow"
+  ) {
     return <AbsoluteFill style={{ pointerEvents: "none" }}>{node}</AbsoluteFill>;
   }
   // honor the EDL's anchor hint for mid-screen cards — these components place
@@ -267,7 +498,21 @@ const HookTitle: React.FC<{ text: string; accent: string; accent2: string; place
           }}
         />
       )}
-      <AbsoluteFill style={{ justifyContent: isCenter ? "center" : "flex-start", alignItems: "center", paddingTop: isCenter ? 0 : 180, padding: isCenter ? 80 : 0 }}>
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: isCenter ? "100%" : "30%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center", // CHÍNH GIỮA 30% TRÊN!
+          alignItems: "center",
+          padding: isCenter ? 80 : "0 30px",
+          paddingTop: isCenter ? 0 : 70, // Đẩy nhẹ xuống dưới thanh icon tìm kiếm/âm thanh để nằm cân đối
+        }}
+      >
         <div style={{ textAlign: "center", maxWidth: isCenter ? 960 : 940, padding: isCenter ? 0 : "0 30px" }}>
           <div
             style={{
@@ -318,7 +563,7 @@ const HookTitle: React.FC<{ text: string; accent: string; accent2: string; place
             }}
           />
         </div>
-      </AbsoluteFill>
+      </div>
     </AbsoluteFill>
   );
 };

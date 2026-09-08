@@ -6,60 +6,88 @@
 import React from "react";
 import { Audio, Sequence, staticFile, useVideoConfig } from "remotion";
 import type { Edl } from "../edl-types";
+import { CAPCUT_TRANSITIONS_REGISTRY } from "./capcut-transitions-registry";
 
 // per-type: [sound file(s), volume]. When multiple files are given, the layer
 // rotates through them across repeated hits so the same graphic type never
 // plays the exact same sample twice in a row (kills the "mechanical" feel).
 type SfxSpec = [string | string[], number];
 const SFX_BY_TYPE: Record<string, SfxSpec> = {
-  hook: [["sfx/impact.mp3", "sfx/impact-hard.mp3", "sfx/impact-soft.mp3"], 0.75],
-  cta: [["sfx/bell.mp3", "sfx/ding.mp3", "sfx/bell-bright.mp3"], 0.85], // subscribe chime
-  kinetic: [["sfx/whoosh.mp3", "sfx/whoosh-fast.mp3"], 0.55],
-  "lower-third": [["sfx/pop.mp3", "sfx/pop-soft.mp3"], 0.45],
-  "color-wipe": [["sfx/transition.mp3", "sfx/transition-soft.mp3"], 0.58],
-  "kinetic-statement": [["sfx/whoosh.mp3", "sfx/swoosh-rev.mp3"], 0.6],
-  "mask-reveal": [["sfx/whoosh-soft.mp3", "sfx/swoosh-rev.mp3"], 0.6],
-  "glass-strip": [["sfx/pop-soft.mp3", "sfx/click.mp3"], 0.5],
-  badge: [["sfx/pop.mp3", "sfx/tick.mp3"], 0.5],
-  callout: [["sfx/whoosh-fast.mp3", "sfx/whoosh.mp3"], 0.6],
-  "highlight-reveal": [["sfx/sparkle.mp3", "sfx/whoosh-soft.mp3"], 0.55],
-  "number-counter": [["sfx/tick.mp3", "sfx/pop-soft.mp3"], 0.55],
-  "donut-stat": [["sfx/pop.mp3", "sfx/ding.mp3"], 0.55],
-  "bar-stat": [["sfx/whoosh-soft.mp3", "sfx/riser.mp3"], 0.6],
-  "progress-bar": [["sfx/tick.mp3", "sfx/riser.mp3"], 0.5],
-  "glass-card": [["sfx/whoosh-soft.mp3", "sfx/sparkle.mp3"], 0.6],
-  // big infographics → stronger scene-transition whoosh
-  "step-flow": [["sfx/transition.mp3", "sfx/transition-punch.mp3"], 0.7],
-  "comparison": [["sfx/transition-punch.mp3", "sfx/transition.mp3"], 0.7],
-  "list-reveal": [["sfx/transition-soft.mp3", "sfx/noise-riser.mp3"], 0.65],
-  "lower-third-pro": [["sfx/pop-soft.mp3", "sfx/click.mp3"], 0.5],
-  "info-table": [["sfx/transition-soft.mp3", "sfx/transition.mp3"], 0.66],
-  "stat-compare": [["sfx/transition.mp3", "sfx/transition-punch.mp3"], 0.66],
-  "illus-mark": [["sfx/whoosh.mp3", "sfx/sparkle.mp3"], 0.55],
-  "path-mark": [["sfx/whoosh-soft.mp3", "sfx/swoosh-rev.mp3"], 0.5],
-  "shape-3d": [["sfx/whoosh.mp3", "sfx/boom.mp3"], 0.56],
-  "premium-roadmap": [["sfx/transition-punch.mp3", "sfx/sub-drop.mp3"], 0.75],
-  "neon-icon-card": [["sfx/pop.mp3", "sfx/sparkle.mp3"], 0.58],
-  "negative-slash-card": [["sfx/impact-hard.mp3", "sfx/impact.mp3"], 0.62],
-  "dual-icon-cards": [["sfx/transition.mp3", "sfx/transition-punch.mp3"], 0.68],
-  "diamond-label": [["sfx/pop-soft.mp3", "sfx/ding.mp3"], 0.48],
-  "ad-comparison-scene": [["sfx/transition-punch.mp3", "sfx/boom.mp3"], 0.62],
-  "fullscreen-keyword": [["sfx/impact-soft.mp3", "sfx/whoosh-fast.mp3", "sfx/hit.mp3"], 0.72],
-  // New Categories from Sound Design Knowledge Base:
-  typing: [["sfx/typing-1.mp3", "sfx/typing-2.mp3"], 0.62],
-  keyboard: [["sfx/keyboard-click.mp3", "sfx/typing-1.mp3"], 0.6],
-  mouse: [["sfx/mouse-click.mp3"], 0.52],
-  tech: [["sfx/pip.mp3", "sfx/hologram.mp3"], 0.6],
-  hologram: [["sfx/hologram.mp3"], 0.6],
-  error: [["sfx/error.mp3"], 0.68],
-  glitch: [["sfx/glitch.mp3"], 0.62],
-  highlight: [["sfx/highlight.mp3"], 0.58],
-  correct: [["sfx/correct.mp3", "sfx/ding.mp3"], 0.72],
-  cartoon: [["sfx/cartoon-effect.mp3"], 0.65],
-  swish: [["sfx/swish.mp3", "sfx/whoosh-fast.mp3"], 0.6],
-  magic: [["sfx/magic-reveal.mp3", "sfx/sparkle.mp3"], 0.65],
+  hook: [["sfx/cinematic-hit.mp3", "sfx/cinematic-boom.mp3", "sfx/transition-deep-woosh.mp3"], 0.75],
+  cta: [["sfx/game-level-complete.mp3", "sfx/game-level-up.mp3", "sfx/tech-notification.mp3"], 0.85],
+  kinetic: [["sfx/transition-woosh-1.mp3", "sfx/transition-woosh-2.mp3", "sfx/foley-brushing.mp3"], 0.55],
+  "lower-third": [["sfx/cartoon-pop.mp3", "sfx/cartoon-blinking.mp3", "sfx/tech-toggle.mp3"], 0.45],
+  "color-wipe": [["sfx/transition-woosh-1.mp3", "sfx/film-burn.mp3", "sfx/reverse-playback.mp3"], 0.58],
+  "kinetic-statement": [["sfx/transition-woosh-1.mp3", "sfx/reverse-playback.mp3"], 0.6],
+  "mask-reveal": [["sfx/transition-deep-woosh.mp3", "sfx/remembering-woosh.mp3"], 0.6],
+  "glass-strip": [["sfx/cartoon-blinking.mp3", "sfx/tech-mouse-click.mp3"], 0.5],
+  badge: [["sfx/game-coin-collect.mp3", "sfx/cartoon-pop.mp3", "sfx/tech-notification.mp3"], 0.5],
+  callout: [["sfx/transition-woosh-2.mp3", "sfx/cartoon-slide-whistle.mp3"], 0.6],
+  "highlight-reveal": [["sfx/foley-brushing.mp3", "sfx/tech-notification.mp3"], 0.55],
+  "number-counter": [["sfx/tech-toggle.mp3", "sfx/tech-mouse-click.mp3", "sfx/cartoon-blinking.mp3"], 0.55],
+  "donut-stat": [["sfx/game-coin-collect.mp3", "sfx/tech-notification.mp3"], 0.55],
+  "bar-stat": [["sfx/transition-deep-woosh.mp3", "sfx/cinematic-metallic-rise.mp3"], 0.6],
+  "progress-bar": [["sfx/tech-digital-loading.mp3", "sfx/tech-toggle.mp3"], 0.5],
+  "glass-card": [["sfx/transition-deep-woosh.mp3", "sfx/remembering-woosh.mp3"], 0.6],
+  // big infographics
+  "step-flow": [["sfx/transition-deep-woosh.mp3", "sfx/foley-deck-brushing.mp3"], 0.7],
+  "comparison": [["sfx/cinematic-hit.mp3", "sfx/transition-deep-woosh.mp3"], 0.7],
+  "list-reveal": [["sfx/transition-woosh-1.mp3", "sfx/tech-toggle.mp3", "sfx/foley-brushing.mp3"], 0.65],
+  "lower-third-pro": [["sfx/cartoon-blinking.mp3", "sfx/tech-mouse-click.mp3"], 0.5],
+  "info-table": [["sfx/transition-woosh-1.mp3", "sfx/transition-deep-woosh.mp3"], 0.66],
+  "stat-compare": [["sfx/cinematic-hit.mp3", "sfx/game-coin-collect.mp3"], 0.66],
+  "illus-mark": [["sfx/transition-woosh-2.mp3", "sfx/game-power-up.mp3"], 0.55],
+  "path-mark": [["sfx/transition-deep-woosh.mp3", "sfx/reverse-playback.mp3"], 0.5],
+  "shape-3d": [["sfx/transition-woosh-1.mp3", "sfx/cinematic-boom.mp3"], 0.56],
+  "premium-roadmap": [["sfx/cinematic-hit.mp3", "sfx/cinematic-boom.mp3"], 0.75],
+  "neon-icon-card": [["sfx/cartoon-pop.mp3", "sfx/game-power-up.mp3"], 0.58],
+  "negative-slash-card": [["sfx/cinematic-hit.mp3", "sfx/cartoon-punch.mp3"], 0.62],
+  "dual-icon-cards": [["sfx/transition-woosh-1.mp3", "sfx/transition-deep-woosh.mp3"], 0.68],
+  "diamond-label": [["sfx/cartoon-blinking.mp3", "sfx/tech-notification.mp3"], 0.48],
+  "ad-comparison-scene": [["sfx/cinematic-hit.mp3", "sfx/cinematic-boom.mp3"], 0.62],
+  "fullscreen-keyword": [["sfx/cinematic-hit.mp3", "sfx/cinematic-boom.mp3", "sfx/transition-deep-woosh.mp3"], 0.72],
+  // Semantic categories from Sound Design Knowledge Base:
+  typing: [["sfx/tech-keyboard-typing.mp3", "sfx/typing-1.mp3"], 0.62],
+  keyboard: [["sfx/tech-keyboard-typing.mp3", "sfx/tech-mouse-click.mp3"], 0.6],
+  mouse: [["sfx/tech-mouse-click.mp3", "sfx/tech-toggle.mp3"], 0.52],
+  tech: [["sfx/tech-notification.mp3", "sfx/tech-digital-loading.mp3", "sfx/tech-toggle.mp3"], 0.6],
+  hologram: [["sfx/tech-digital-loading.mp3", "sfx/tech-glitch.mp3"], 0.6],
+  error: [["sfx/cartoon-womp-womp.mp3", "sfx/game-health-low.mp3"], 0.68],
+  highlight: [["sfx/foley-brushing.mp3", "sfx/tech-notification.mp3"], 0.58],
+  correct: [["sfx/game-level-up.mp3", "sfx/game-power-up.mp3"], 0.72],
+  cartoon: [["sfx/cartoon-boing.mp3", "sfx/cartoon-pop.mp3", "sfx/cartoon-punch.mp3", "sfx/cartoon-slide-whistle.mp3"], 0.65],
+  swish: [["sfx/transition-woosh-1.mp3", "sfx/transition-woosh-2.mp3"], 0.6],
+  magic: [["sfx/game-power-up.mp3", "sfx/game-level-up.mp3", "sfx/remembering-woosh.mp3"], 0.65],
   camera: [["sfx/camera-shutter.mp3"], 0.62],
-  paper: [["sfx/paper-slide.mp3"], 0.55],
+  paper: [["sfx/foley-deck-brushing.mp3", "sfx/foley-sponge.mp3"], 0.55],
+  // 5 Transition Families:
+  flash: [["sfx/camera-shutter.mp3", "sfx/transition-woosh-2.mp3"], 0.65],
+  "color-flash": [["sfx/camera-shutter.mp3", "sfx/game-power-up.mp3"], 0.65],
+  "light-leak": [["sfx/film-burn.mp3", "sfx/remembering-woosh.mp3"], 0.6],
+  "quick-cut": [["sfx/transition-woosh-2.mp3", "sfx/cartoon-pop.mp3"], 0.6],
+  "glitch-cut": [["sfx/tech-glitch.mp3", "sfx/game-pixel-explosion.mp3"], 0.65],
+  "swipe-right": [["sfx/transition-woosh-1.mp3", "sfx/transition-woosh-2.mp3", "sfx/foley-brushing.mp3"], 0.6],
+  "swipe-up": [["sfx/transition-woosh-2.mp3", "sfx/reverse-playback.mp3"], 0.6],
+  "zoom-blur": [["sfx/transition-deep-woosh.mp3", "sfx/cinematic-boom.mp3"], 0.65],
+  "whip-pan": [["sfx/transition-woosh-2.mp3", "sfx/transition-deep-woosh.mp3"], 0.68],
+  "mask-circle": [["sfx/remembering-woosh.mp3", "sfx/game-power-up.mp3"], 0.62],
+  "blend-fade": [["sfx/remembering-woosh.mp3", "sfx/cinematic-metallic-rise.mp3"], 0.55],
+  // Anh-sac style visuals & transitions
+  "grid-flat-card": [["sfx/cinematic-hit.mp3", "sfx/transition-woosh-2.mp3"], 0.72],
+  "number-badge": [["sfx/game-coin-collect.mp3", "sfx/tech-notification.mp3"], 0.7],
+  "debris-shatter": [["sfx/game-pixel-explosion.mp3", "sfx/cinematic-hit.mp3"], 0.7],
+  "kinetic-pop": [["sfx/cartoon-pop.mp3", "sfx/cinematic-hit.mp3"], 0.65],
+  "staggered-lines": [["sfx/transition-woosh-1.mp3", "sfx/foley-brushing.mp3"], 0.6],
+  // CapCut 9 Transition Suite — Fixed 1:1 Hardcoded SFX Pairing:
+  "glare-ii": [["sfx/glare-burn.mp3"], 0.9],
+  "phone-reveal": [["sfx/phone-shutter-1.mp3"], 0.95],
+  "paper-ball": [["sfx/paper-ball-yt.mp3"], 0.95],
+  glitch: [["sfx/glitch-cut.mp3"], 0.85],
+  "fade-down": [["sfx/fade-woosh.mp3"], 0.9],
+  blink: [["sfx/click.mp3"], 0.95],
+  "wave-right": [["sfx/wave-sparkle.mp3"], 0.9],
+  "swipe-left": [["sfx/whoosh-fast.mp3"], 0.95],
+  "comic-cut": [["sfx/comic-paper-tear.mp3"], 0.95],
 };
 
 /** Pick a variant for the n-th hit of a type; rotates so repeats differ. */
@@ -79,8 +107,18 @@ const SFX_WEIGHT: Record<string, number> = {
   "dual-icon-cards": 8, "diamond-label": 3,
   "ad-comparison-scene": 8,
   "fullscreen-keyword": 8,
-  typing: 5, keyboard: 5, mouse: 4, tech: 6, hologram: 6, error: 8, glitch: 7,
+  typing: 5, keyboard: 5, mouse: 4, tech: 6, hologram: 6, error: 8,
   highlight: 5, correct: 8, cartoon: 5, swish: 5, magic: 6, camera: 6, paper: 5,
+  // transitions
+  flash: 8, "color-flash": 8, "light-leak": 7,
+  "quick-cut": 7, "glitch-cut": 8,
+  "swipe-right": 7, "swipe-up": 7,
+  "zoom-blur": 8, "whip-pan": 8,
+  "mask-circle": 7, "blend-fade": 6,
+  // CapCut transitions
+  "glare-ii": 9, "phone-reveal": 9, "paper-ball": 9, glitch: 9, "fade-down": 9, blink: 9, "wave-right": 9, "swipe-left": 9, "comic-cut": 9,
+  // anh-sac
+  "grid-flat-card": 9, "number-badge": 8, "debris-shatter": 8, "kinetic-pop": 7, "staggered-lines": 6,
 };
 const MIN_GAP_MS = 1200; // refined spacing allowing responsive cues
 const PRE_ROLL_MS = 65;  // sound lands ~65ms BEFORE the visual ("impact" feel)
@@ -136,6 +174,71 @@ const SFX_FILE_BY_CUE: Record<Edl["tracks"]["sfx"][number]["sound"], string> = {
   // 5. Chuyển cảnh & Foley
   "camera-shutter": "sfx/camera-shutter.mp3",
   "paper-slide": "sfx/paper-slide.mp3",
+  // 34 mẫu chuẩn hóa từ video Anh Sắc:
+  // 1. Công nghệ
+  "tech-notification": "sfx/tech-notification.mp3",
+  "tech-mouse-click": "sfx/tech-mouse-click.mp3",
+  "tech-keyboard-typing": "sfx/tech-keyboard-typing.mp3",
+  "tech-toggle": "sfx/tech-toggle.mp3",
+  "tech-glitch": "sfx/tech-glitch.mp3",
+  "tech-digital-loading": "sfx/tech-digital-loading.mp3",
+  // 2. Chuyển cảnh
+  "transition-woosh-1": "sfx/transition-woosh-1.mp3",
+  "transition-woosh-2": "sfx/transition-woosh-2.mp3",
+  "transition-deep-woosh": "sfx/transition-deep-woosh.mp3",
+  "film-burn": "sfx/film-burn.mp3",
+  "reverse-playback": "sfx/reverse-playback.mp3",
+  // 3. Cinematic
+  "cinematic-metallic-rise": "sfx/cinematic-metallic-rise.mp3",
+  "cinematic-boom": "sfx/cinematic-boom.mp3",
+  "cinematic-hit": "sfx/cinematic-hit.mp3",
+  "remembering-woosh": "sfx/remembering-woosh.mp3",
+  // 4. Hành động (Foley)
+  "foley-brushing": "sfx/foley-brushing.mp3",
+  "foley-deck-brushing": "sfx/foley-deck-brushing.mp3",
+  "foley-sponge": "sfx/foley-sponge.mp3",
+  "foley-boiling-dishes": "sfx/foley-boiling-dishes.mp3",
+  "foley-stir-ice-glass": "sfx/foley-stir-ice-glass.mp3",
+  // 5. Hoạt hình / Retro
+  "cartoon-pop": "sfx/cartoon-pop.mp3",
+  "cartoon-running": "sfx/cartoon-running.mp3",
+  "cartoon-punch": "sfx/cartoon-punch.mp3",
+  "cartoon-womp-womp": "sfx/cartoon-womp-womp.mp3",
+  "cartoon-blinking": "sfx/cartoon-blinking.mp3",
+  "cartoon-slide-whistle": "sfx/cartoon-slide-whistle.mp3",
+  "cartoon-boing": "sfx/cartoon-boing.mp3",
+  // 6. Game
+  "game-coin-collect": "sfx/game-coin-collect.mp3",
+  "game-power-up": "sfx/game-power-up.mp3",
+  "game-level-up": "sfx/game-level-up.mp3",
+  "game-health-low": "sfx/game-health-low.mp3",
+  "game-pixel-explosion": "sfx/game-pixel-explosion.mp3",
+  "game-level-complete": "sfx/game-level-complete.mp3",
+  // 11 mẫu bổ sung từ video Kobe Media (giây 45 trở đi):
+  "kobe-woosh": "sfx/kobe-woosh.mp3",
+  "comic-vocal-uh": "sfx/comic-vocal-uh.mp3",
+  "chime-ding": "sfx/chime-ding.mp3",
+  "cinematic-suspense": "sfx/cinematic-suspense.mp3",
+  "among-us-reveal": "sfx/among-us-reveal.mp3",
+  "cartoon-duck-quack": "sfx/cartoon-duck-quack.mp3",
+  "slide-whistle-up": "sfx/slide-whistle-up.mp3",
+  "game-correct": "sfx/game-correct.mp3",
+  "game-wrong-buzzer": "sfx/game-wrong-buzzer.mp3",
+  "cartoon-thump-boing": "sfx/cartoon-thump-boing.mp3",
+  "comic-vocal-yeet": "sfx/comic-vocal-yeet.mp3",
+  // Aliases
+  wrong: "sfx/game-wrong-buzzer.mp3",
+  buzzer: "sfx/game-wrong-buzzer.mp3",
+  suspense: "sfx/cinematic-suspense.mp3",
+  yeet: "sfx/comic-vocal-yeet.mp3",
+  // 7. CapCut Suite SFX chuyên biệt (Fixed Pairing)
+  "phone-shutter-1": "sfx/phone-shutter-1.mp3",
+  "paper-ball-yt": "sfx/paper-ball-yt.mp3",
+  "comic-paper-tear": "sfx/comic-paper-tear.mp3",
+  "wave-sparkle": "sfx/wave-sparkle.mp3",
+  "glare-burn": "sfx/glare-burn.mp3",
+  "glitch-cut": "sfx/glitch-cut.mp3",
+  "fade-woosh": "sfx/fade-woosh.mp3",
 };
 
 export const SfxLayer: React.FC<{
@@ -169,11 +272,11 @@ export const SfxLayer: React.FC<{
 
   // budget: greedily keep the highest-weight SFX, enforce MIN_GAP between hits
   const transitionCandidates = transitions.map((t) => ({
-    g: { type: t.type, startMs: t.startMs },
+    g: { type: t.type, startMs: t.startMs, endMs: t.endMs },
     w: SFX_WEIGHT[t.type] ?? 0,
   }));
   const candidates = [
-    ...graphics.map((g) => ({ g, w: SFX_WEIGHT[g.type] ?? 0 })),
+    ...graphics.map((g) => ({ g: { type: g.type, startMs: g.startMs, endMs: undefined as number | undefined }, w: SFX_WEIGHT[g.type] ?? 0 })),
     ...transitionCandidates,
   ].filter((c) => c.w > 0 && SFX_BY_TYPE[c.g.type]);
   const chosen: typeof candidates = [];
@@ -194,8 +297,15 @@ export const SfxLayer: React.FC<{
         hitCount[c.g.type] = n + 1;
         const [src, vol] = pickVariant(SFX_BY_TYPE[c.g.type], n);
         const from = Math.max(0, Math.round(((c.g.startMs - PRE_ROLL_MS) / 1000) * fps));
+        // Anti-Bleed Hard Cutoff: Stop sound immediately when transition finishes
+        const capcutDef = CAPCUT_TRANSITIONS_REGISTRY[c.g.type];
+        const durationInFrames = capcutDef
+          ? Math.round(capcutDef.durationSec * fps)
+          : c.g.endMs
+          ? Math.max(1, Math.round(((c.g.endMs - c.g.startMs) / 1000) * fps))
+          : Math.round(fps * 1.2);
         return (
-          <Sequence key={`sfx-${i}`} from={from} durationInFrames={Math.round(fps * 1.2)}>
+          <Sequence key={`sfx-${i}`} from={from} durationInFrames={durationInFrames}>
             <Audio src={staticFile(src)} volume={vol} />
           </Sequence>
         );

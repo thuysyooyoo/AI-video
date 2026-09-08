@@ -50,9 +50,17 @@ def main():
                          "host-written reasoning (--plan) — recommended when running through Codex.")
     ap.add_argument("--plan", default=None,
                     help="host-written reasoning JSON for --llm prefed (default out/host-plan.json)")
-    ap.add_argument("--model", default="local", help="reserved for local CLI providers")
+    ap.add_argument("--preset", default="anh-sac-podcast",
+                    choices=["thuy-style-oneshot", "thuy-style-nhieu-canh", "classic", "anh-sac-podcast"],
+                    help="editing style preset to use")
     ap.add_argument("--force-regen", action="store_true",
                     help="overwrite out/edl.json even if it has manual edits")
+    ap.add_argument("--bgm", default="auto",
+                    help="background music relative path under public/, 'auto' to choose by theme/text, or 'none' to disable")
+    ap.add_argument("--bgm-volume", type=float, default=0.22,
+                    help="BGM volume (default: 0.22 for talking-head)")
+    ap.add_argument("--no-bgm", action="store_true",
+                    help="disable background music completely")
     ap.add_argument("--render", action="store_true",
                     help="render out/final.mp4 with Remotion after the pipeline")
     ap.add_argument("--open", action="store_true",
@@ -104,12 +112,12 @@ def main():
     print("[3b] Face-zone detection (local OpenCV)...")
     run([PY, str(SCRIPTS / "detect-face-zones.py"), final_clip])
 
-    print(f"[4] Generate EDL ({a.llm})...")
+    print(f"[4] Generate EDL ({a.llm}, {a.preset})...")
     edl_cmd = [
         PY, str(SCRIPTS / "generate-edl.py"),
         "--clip", final_clip,
+        "--preset", a.preset,
         "--llm", a.llm,
-        "--model", a.model,
     ]
     if a.plan:
         edl_cmd += ["--plan", a.plan]
@@ -117,6 +125,10 @@ def main():
         edl_cmd.append("--smart")
     if a.force_regen:
         edl_cmd.append("--force-regen")
+    if a.no_bgm:
+        edl_cmd.append("--no-bgm")
+    else:
+        edl_cmd += ["--bgm", a.bgm, "--bgm-volume", str(a.bgm_volume)]
     run(edl_cmd)
 
     if not a.render:

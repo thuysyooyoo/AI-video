@@ -1,0 +1,286 @@
+﻿import os
+import json
+
+base_dirs = [
+    r"d:\AI AGENT THUY\AI-video-main\AI-video-main\public\bgm",
+    r"d:\AI AGENT THUY\AI-video-main\public\bgm"
+]
+
+catalog = [
+    {
+        "category_id": "01_ke_chuyen_cam_xuc",
+        "category_title": "KỂ CHUYỆN CẢM XÚC (Storytelling / Emotional)",
+        "mood": "Sâu lắng, cảm xúc, hoài niệm, mở lòng",
+        "tracks": [
+            {
+                "title": "Hotline Bling",
+                "artist": "Drake",
+                "filename": "Drake - Hotline Bling (Instrumental).mp3",
+                "relative_path": "bgm/01_ke_chuyen_cam_xuc/Drake - Hotline Bling (Instrumental).mp3",
+                "type": "Instrumental Beat",
+                "description": "Beat chill, chậm rãi, tạo không khí tâm sự, chia sẻ chuyện cá nhân."
+            },
+            {
+                "title": "Idea 15",
+                "artist": "Gibran Alcocer",
+                "filename": "Gibran Alcocer - Idea 15.mp3",
+                "relative_path": "bgm/01_ke_chuyen_cam_xuc/Gibran Alcocer - Idea 15.mp3",
+                "type": "Piano Solo",
+                "description": "Giai điệu piano viral kinh điển trên TikTok cho các video deep, cảm xúc cao trào."
+            },
+            {
+                "title": "Dark Red",
+                "artist": "Steve Lacy",
+                "filename": "Steve Lacy - Dark Red (Instrumental).mp3",
+                "relative_path": "bgm/01_ke_chuyen_cam_xuc/Steve Lacy - Dark Red (Instrumental).mp3",
+                "type": "Indie Pop Beat",
+                "description": "Nhịp điệu guitar ấm áp, lo-fi, thích hợp cho chuyện tình cảm, self-reflection."
+            },
+            {
+                "title": "Walking on a Dream",
+                "artist": "Empire of the Sun",
+                "filename": "Empire of the Sun - Walking on a Dream (Instrumental).mp3",
+                "relative_path": "bgm/01_ke_chuyen_cam_xuc/Empire of the Sun - Walking on a Dream (Instrumental).mp3",
+                "type": "Dream Pop / Synth Instrumental",
+                "description": "Bay bổng, mơ mộng, thích hợp cho kể về ước mơ, chuyến đi, kỷ niệm."
+            },
+            {
+                "title": "Low Key Gliding",
+                "artist": "Hal Walker",
+                "filename": "Hal Walker - Low Key Gliding.mp3",
+                "relative_path": "bgm/01_ke_chuyen_cam_xuc/Hal Walker - Low Key Gliding.mp3",
+                "type": "Acoustic / Khaen",
+                "description": "Giai điệu lướt êm đềm, thư thái, mộc mạc, cực kỳ hút tai người nghe."
+            },
+            {
+                "title": "Runaway",
+                "artist": "Kanye West",
+                "filename": "Kanye West - Runaway (Piano Instrumental).mp3",
+                "relative_path": "bgm/01_ke_chuyen_cam_xuc/Kanye West - Runaway (Piano Instrumental).mp3",
+                "type": "Piano Intro / Trap Beat",
+                "description": "Những nốt piano đơn độc mở đầu huyền thoại, biểu tượng của sự thẳng thắn và nội tâm."
+            }
+        ]
+    },
+    {
+        "category_id": "02_giao_duc_kien_thuc",
+        "category_title": "GIÁO DỤC / CHIA SẺ KIẾN THỨC (Education / Authority)",
+        "mood": "Năng lượng, dứt khoát, bắt tai, giữ chân người xem (retention)",
+        "tracks": [
+            {
+                "title": "Not Like Us",
+                "artist": "Kendrick Lamar",
+                "filename": "Kendrick Lamar - Not Like Us (Instrumental).mp3",
+                "relative_path": "bgm/02_giao_duc_kien_thuc/Kendrick Lamar - Not Like Us (Instrumental).mp3",
+                "type": "West Coast Beat",
+                "description": "BPM nhanh, hook mạnh, thu hút sự chú ý ngay từ giây đầu tiên của video ngắn."
+            },
+            {
+                "title": "Money So Big",
+                "artist": "Yeat",
+                "filename": "Yeat - Money So Big (Instrumental).mp3",
+                "relative_path": "bgm/02_giao_duc_kien_thuc/Yeat - Money So Big (Instrumental).mp3",
+                "type": "Rage Trap Beat",
+                "description": "Bass 808 đập uy lực, tạo cảm giác hiện đại, công nghệ, tips & tricks bùng nổ."
+            },
+            {
+                "title": "Vampire Heart",
+                "artist": "Yeat ft. Homixide Gang (prod. SANIKWAVE, KEY KELLY)",
+                "filename": "Yeat - Vampire Heart (Instrumental).mp3",
+                "relative_path": "bgm/02_giao_duc_kien_thuc/Yeat - Vampire Heart (Instrumental).mp3",
+                "type": "Trap Synth Beat",
+                "description": "Beat synth điện tử dồn dập, phong cách Opium/rage phù hợp video tech, AI, tài chính."
+            },
+            {
+                "title": "Like That",
+                "artist": "Future & Metro Boomin",
+                "filename": "Future & Metro Boomin - Like That (Instrumental).mp3",
+                "relative_path": "bgm/02_giao_duc_kien_thuc/Future & Metro Boomin - Like That (Instrumental).mp3",
+                "type": "Hip-Hop Beat",
+                "description": "Nhịp trống giòn giã, bass đanh thép, tăng tính thuyết phục cho lời nói."
+            },
+            {
+                "title": "20 Min",
+                "artist": "Lil Uzi Vert",
+                "filename": "Lil Uzi Vert - 20 Min (Instrumental).mp3",
+                "relative_path": "bgm/02_giao_duc_kien_thuc/Lil Uzi Vert - 20 Min (Instrumental).mp3",
+                "type": "Synth Trap Beat",
+                "description": "Giai điệu arpeggio cuốn hút bất tận, một trong những beat giữ nhịp talking-head tốt nhất."
+            },
+            {
+                "title": "Hell N Back",
+                "artist": "Bakar",
+                "filename": "Bakar - Hell N Back (Instrumental).mp3",
+                "relative_path": "bgm/02_giao_duc_kien_thuc/Bakar - Hell N Back (Instrumental).mp3",
+                "type": "Groovy Indie Soul",
+                "description": "Tươi vui, nhún nhảy nhẹ nhàng, giúp kiến thức khô khan trở nên dễ tiếp nhận."
+            }
+        ]
+    },
+    {
+        "category_id": "03_vlog_day_in_life",
+        "category_title": "VLOG / DAY IN LIFE (Lifestyle / Casual / Daily)",
+        "mood": "Thư giãn, sành điệu, nhịp nhàng, đời thường",
+        "tracks": [
+            {
+                "title": "I Wanna Be Yours",
+                "artist": "Arctic Monkeys",
+                "filename": "Arctic Monkeys - I Wanna Be Yours (Instrumental).mp3",
+                "relative_path": "bgm/03_vlog_day_in_life/Arctic Monkeys - I Wanna Be Yours (Instrumental).mp3",
+                "type": "Indie Slow Rock",
+                "description": "Không gian rộng mở, chill, thẩm mỹ cao (aesthetic), cực hợp cảnh quay cinematic."
+            },
+            {
+                "title": "Surround Sound",
+                "artist": "JID ft. 21 Savage & Baby Tate",
+                "filename": "JID - Surround Sound (Instrumental).mp3",
+                "relative_path": "bgm/03_vlog_day_in_life/JID - Surround Sound (Instrumental).mp3",
+                "type": "Modern Hip Hop Beat",
+                "description": "Sample Aretha Franklin sang trọng kết hợp trống bập bùng tạo chất riêng cho vlog."
+            },
+            {
+                "title": "Lost",
+                "artist": "Frank Ocean",
+                "filename": "Frank Ocean - Lost (Instrumental).mp3",
+                "relative_path": "bgm/03_vlog_day_in_life/Frank Ocean - Lost (Instrumental).mp3",
+                "type": "Neo Soul / R&B",
+                "description": "Vibe mùa hè, du lịch, dạo phố, nhịp bass nảy tưng bừng tràn đầy sức sống."
+            },
+            {
+                "title": "Paper Planes",
+                "artist": "M.I.A.",
+                "filename": "M.I.A. - Paper Planes (Instrumental).mp3",
+                "relative_path": "bgm/03_vlog_day_in_life/M.I.A. - Paper Planes (Instrumental).mp3",
+                "type": "Alternative Hip Hop",
+                "description": "Tiếng guitar acoustic kết hợp nhịp gõ quen thuộc, kinh điển cho cảnh di chuyển."
+            },
+            {
+                "title": "Tell Em",
+                "artist": "Cochise & $NOT",
+                "filename": "Cochise & $NOT - Tell Em (Instrumental).mp3",
+                "relative_path": "bgm/03_vlog_day_in_life/Cochise & $NOT - Tell Em (Instrumental).mp3",
+                "type": "Cloud Trap Beat",
+                "description": "Giai điệu điện tử bay bổng, năng lượng Gen Z cho các hoạt động thường nhật."
+            },
+            {
+                "title": "Space Cadet",
+                "artist": "Metro Boomin ft. Gunna",
+                "filename": "Metro Boomin - Space Cadet (Instrumental).mp3",
+                "relative_path": "bgm/03_vlog_day_in_life/Metro Boomin - Space Cadet (Instrumental).mp3",
+                "type": "Trap Beat",
+                "description": "Từ album Not All Heroes Wear Capes (hình vụ nổ), beat lướt mượt mà cho vlog."
+            },
+            {
+                "title": "Runaway",
+                "artist": "Aurora",
+                "filename": "Aurora - Runaway (Instrumental).mp3",
+                "relative_path": "bgm/03_vlog_day_in_life/Aurora - Runaway (Instrumental).mp3",
+                "type": "Ethereal Pop (Bonus)",
+                "description": "Bản nhạc phụ đề thiên nhiên, hoàng hôn, phong cảnh vlog viral toàn cầu."
+            }
+        ]
+    },
+    {
+        "category_id": "04_dong_luc_cam_xuc",
+        "category_title": "ĐỘNG LỰC, CẢM XÚC (Motivation / Inspiration)",
+        "mood": "Truyền cảm hứng, vượt khó, năng lượng tích cực, bứt phá",
+        "tracks": [
+            {
+                "title": "Thank You",
+                "artist": "Dido",
+                "filename": "Dido - Thank You (Instrumental).mp3",
+                "relative_path": "bgm/04_dong_luc_cam_xuc/Dido - Thank You (Instrumental).mp3",
+                "type": "Trip Hop / Pop",
+                "description": "Beat kinh điển (nền tảng bài Stan), cảm giác tri ân, ấm áp và kiên định."
+            },
+            {
+                "title": "Young Folks",
+                "artist": "Peter Bjorn and John",
+                "filename": "Peter Bjorn and John - Young Folks (Instrumental).mp3",
+                "relative_path": "bgm/04_dong_luc_cam_xuc/Peter Bjorn and John - Young Folks (Instrumental).mp3",
+                "type": "Indie Pop Whistling",
+                "description": "Tiếng huýt sáo vui tai, lạc quan, truyền năng lượng tích cực thức dậy mỗi ngày."
+            },
+            {
+                "title": "Million Dollar Baby",
+                "artist": "Tommy Richman",
+                "filename": "Tommy Richman - Million Dollar Baby (Instrumental).mp3",
+                "relative_path": "bgm/04_dong_luc_cam_xuc/Tommy Richman - Million Dollar Baby (Instrumental).mp3",
+                "type": "Funk / Synth R&B",
+                "description": "Bản hit 2024 siêu bùng nổ, tạo cảm giác chiến thắng, đẳng cấp, thành công."
+            },
+            {
+                "title": "Heart On My Sleeve",
+                "artist": "Ghostwriter977",
+                "filename": "Ghostwriter - Heart On My Sleeve.mp3",
+                "relative_path": "bgm/04_dong_luc_cam_xuc/Ghostwriter - Heart On My Sleeve.mp3",
+                "type": "Melodic Rap Beat",
+                "description": "Bản nhạc AI viral chấn động làng nhạc, giai điệu piano và bass cuốn hút."
+            },
+            {
+                "title": "1901",
+                "artist": "Phoenix",
+                "filename": "Phoenix - 1901 (Instrumental).mp3",
+                "relative_path": "bgm/04_dong_luc_cam_xuc/Phoenix - 1901 (Instrumental).mp3",
+                "type": "Indie Rock / Synth",
+                "description": "Nhịp trống thúc giục, tươi sáng, thúc đẩy tinh thần hành động ngay lập tức."
+            },
+            {
+                "title": "Memory Reboot",
+                "artist": "VOJ & Narvent",
+                "filename": "VOJ & Narvent - Memory Reboot.mp3",
+                "relative_path": "bgm/04_dong_luc_cam_xuc/VOJ & Narvent - Memory Reboot.mp3",
+                "type": "Synthwave Phonk",
+                "description": "Bản nhạc đỉnh cao của thể loại motivation / gym / sigma / bứt phá giới hạn."
+            }
+        ]
+    }
+]
+
+md_content = """# THƯ VIỆN NHẠC NỀN TIKTOK / REELS / SHORTS VIDEO EDITING
+
+Bộ sưu tập đầy đủ các bản nhạc nền (Background Music - BGM) chuyên dùng để cắt ghép, dựng video ngắn (talking-head, review, vlog, giáo dục, truyền cảm hứng) theo chuẩn phong cách thịnh hành trên TikTok / Reels.
+
+Tất cả các bản nhạc đã được tải về ở định dạng **MP3 chất lượng cao**, phần lớn là bản **Beat / Instrumental (không lời)** để tránh lấn át giọng nói của nhân vật khi nói chuyện.
+
+---
+
+"""
+
+for cat in catalog:
+    md_content += f"## 📂 {cat['category_title']}\n"
+    md_content += f"> **Đặc điểm & Mood:** {cat['mood']}\n\n"
+    md_content += "| STT | Tên bài hát | Nghệ sĩ | Thể loại | Đường dẫn file |\n"
+    md_content += "|---|---|---|---|---|\n"
+    for i, t in enumerate(cat["tracks"], 1):
+        md_content += f"| {i} | **{t['title']}** | {t['artist']} | {t['type']} | `{t['relative_path']}` |\n"
+    md_content += "\n---\n\n"
+
+md_content += """## CÁCH SỬ DỤNG TRONG DỰ ÁN REMOTION
+
+Trong cấu hình EDL (`edl.json`), bạn có thể thêm trường `music` như sau:
+
+```json
+{
+  "music": {
+    "src": "bgm/01_ke_chuyen_cam_xuc/Drake - Hotline Bling (Instrumental).mp3",
+    "volume": 0.25,
+    "clipVolume": 1.0,
+    "loop": true,
+    "startSec": 0,
+    "fadeOutSec": 1.5
+  }
+}
+```
+
+*Lưu ý: Đối với video talking-head nói nhiều, nên đặt `volume` từ `0.15` đến `0.30` để giọng nói rõ ràng và nhạc nền êm ái phía dưới.*
+"""
+
+for d in base_dirs:
+    os.makedirs(d, exist_ok=True)
+    with open(os.path.join(d, "README.md"), "w", encoding="utf-8") as f:
+        f.write(md_content)
+    with open(os.path.join(d, "catalog.json"), "w", encoding="utf-8") as f:
+        json.dump(catalog, f, ensure_ascii=False, indent=2)
+
+print("Generated README.md and catalog.json successfully!")

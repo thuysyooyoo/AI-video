@@ -5,30 +5,41 @@
 import React from "react";
 import { Composition } from "remotion";
 import { Reel } from "./Reel";
+import { CapCutTransitionsShowcase } from "./components/CapCutTransitionsShowcase";
 import { edlSchema, type Edl } from "./edl-types";
 import demoEdl from "./fixtures/demo-edl.json";
 
 export const RemotionRoot: React.FC = () => {
   return (
-    <Composition
-      id="Reel"
-      component={Reel}
-      width={1080}
-      height={1920}
-      fps={30}
-      durationInFrames={300}
-      defaultProps={{ edl: demoEdl as unknown as Edl }}
-      calculateMetadata={({ props }) => {
-        const edl = edlSchema.parse(props.edl);
-        const { w, h, fps } = edl.format;
-        return {
-          width: w,
-          height: h,
-          fps,
-          durationInFrames: Math.ceil(edl.source.durationSec * fps),
-          props: { edl },
-        };
-      }}
-    />
+    <>
+      <Composition
+        id="Reel"
+        component={Reel}
+        width={1080}
+        height={1920}
+        fps={30}
+        durationInFrames={300}
+        defaultProps={{ edl: demoEdl as unknown as Edl }}
+        calculateMetadata={({ props }) => {
+          const edl = edlSchema.parse(props.edl);
+          const { w, h, fps } = edl.format;
+          return {
+            width: w,
+            height: h,
+            fps,
+            durationInFrames: Math.ceil(edl.source.durationSec * fps),
+            props: { edl },
+          };
+        }}
+      />
+      <Composition
+        id="CapCutShowcase"
+        component={CapCutTransitionsShowcase}
+        width={1080}
+        height={1920}
+        fps={30}
+        durationInFrames={810}
+      />
+    </>
   );
 };

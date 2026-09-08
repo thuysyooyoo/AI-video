@@ -11,6 +11,18 @@
     "useHierarchicalHeadlines": true,
     "dynamicBrollDuration": true
   },
+  "thuy-style-nhieu-canh": {
+    "captionBuilder": "summary",
+    "injectFullscreenBroll": true,
+    "stripEmojis": true,
+    "scrimMode": "top-only",
+    "iconsEnabled": false,
+    "cardPlacement": "top-safe",
+    "captionMutualExclusion": true,
+    "allowBoxyCards": false,
+    "useHierarchicalHeadlines": true,
+    "dynamicBrollDuration": true
+  },
   "classic": {
     "captionBuilder": "karaoke",
     "injectFullscreenBroll": false,
@@ -22,5 +34,17 @@
     "allowBoxyCards": true,
     "useHierarchicalHeadlines": false,
     "dynamicBrollDuration": false
+  },
+  "anh-sac-podcast": {
+    "captionBuilder": "summary",
+    "injectFullscreenBroll": true,
+    "stripEmojis": true,
+    "scrimMode": "subtle",
+    "iconsEnabled": true,
+    "cardPlacement": "center",
+    "captionMutualExclusion": true,
+    "allowBoxyCards": false,
+    "useHierarchicalHeadlines": true,
+    "dynamicBrollDuration": true
   }
 }

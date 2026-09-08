@@ -14,9 +14,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 PACKAGE_NAME = "tisa-ai-editor-agent"
 
-DIRS = ["agents", "scripts", "src", "references", "public/sfx", "goldens"]
+DIRS = [".agents", "agents", "docs", "goldens", "public/bgm", "public/sfx", "references", "scripts", "src"]
 FILES = [
     "SKILL.md",
+    "README.md",
     "package.json",
     "package-lock.json",
     "requirements.txt",

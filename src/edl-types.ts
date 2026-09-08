@@ -21,7 +21,19 @@ export const captionSchema = z.object({
   // index of the keyword token to color-highlight (Hormozi style); -1 = none
   keywordIdx: z.number().default(-1),
   // Hierarchical summary caption fields (photo reference styles)
-  headlineStyle: z.enum(["3-tier", "stat-punch", "split-contrast", "tag-headline", "normal"]).default("3-tier"),
+  headlineStyle: z.enum([
+    "3-tier",
+    "stat-punch",
+    "split-contrast",
+    "tag-headline",
+    "normal",
+    "kinetic-pop",
+    "staggered-lines",
+    "glow-ambient",
+    "asymmetric-trio",
+    "stacked-contrast",
+    "multiblock-flow",
+  ]).default("normal"),
   header: z.string().optional(),
   keyword: z.string().optional(),
   sub: z.string().optional(),
@@ -39,7 +51,38 @@ export const effectSchema = z.object({
 });
 
 export const transitionSchema = z.object({
-  type: z.enum(["color-wipe", "flash", "zoom-blur"]),
+  type: z.enum([
+    // legacy support
+    "color-wipe",
+    "flash",
+    "zoom-blur",
+    // 1. Quick cut / beat cut family
+    "quick-cut",
+    "glitch-cut",
+    // 2. Swipe / slide family
+    "swipe-left",
+    "swipe-right",
+    "swipe-up",
+    // 3. Zoom / whip family
+    "whip-pan",
+    // 4. Blend / mask family
+    "mask-circle",
+    "blend-fade",
+    // 5. Color flash / light leak family
+    "color-flash",
+    "light-leak",
+    // 6. Shatter / debris family
+    "debris-shatter",
+    // 7. CapCut viral transition suite
+    "glare-ii",
+    "phone-reveal",
+    "glitch",
+    "fade-down",
+    "blink",
+    "wave-right",
+    "comic-cut",
+    "paper-ball",
+  ]),
   startMs: z.number(),
   endMs: z.number(),
   direction: z.enum(["up", "down", "left", "right"]).default("up"),
@@ -74,6 +117,27 @@ export const sfxCueSchema = z.object({
     "highlight", "hit", "correct",
     // 5. Chuyển cảnh & Foley
     "camera-shutter", "paper-slide",
+    // 34 mẫu chuẩn hóa từ video Anh Sắc:
+    // 1. Công nghệ
+    "tech-notification", "tech-mouse-click", "tech-keyboard-typing", "tech-toggle", "tech-glitch", "tech-digital-loading",
+    // 2. Chuyển cảnh
+    "transition-woosh-1", "transition-woosh-2", "transition-deep-woosh", "film-burn", "reverse-playback",
+    // 3. Cinematic
+    "cinematic-metallic-rise", "cinematic-boom", "cinematic-hit", "remembering-woosh",
+    // 4. Hành động (Foley)
+    "foley-brushing", "foley-deck-brushing", "foley-sponge", "foley-boiling-dishes", "foley-stir-ice-glass",
+    // 5. Hoạt hình / Retro
+    "cartoon-pop", "cartoon-running", "cartoon-punch", "cartoon-womp-womp", "cartoon-blinking", "cartoon-slide-whistle", "cartoon-boing",
+    // 6. Game
+    "game-coin-collect", "game-power-up", "game-level-up", "game-health-low", "game-pixel-explosion", "game-level-complete",
+    // 11 mẫu bổ sung từ video Kobe Media (giây 45 trở đi):
+    "kobe-woosh", "comic-vocal-uh", "chime-ding", "cinematic-suspense", "among-us-reveal",
+    "cartoon-duck-quack", "slide-whistle-up", "game-correct", "game-wrong-buzzer",
+    "cartoon-thump-boing", "comic-vocal-yeet",
+    // Aliases bổ sung
+    "wrong", "buzzer", "suspense", "yeet",
+    // 7. CapCut Suite SFX chuyên biệt (Fixed Pairing)
+    "phone-shutter-1", "paper-ball-yt", "comic-paper-tear", "wave-sparkle", "glare-burn", "glitch-cut", "fade-woosh",
   ]),
   volume: z.number().default(0.6),
   priority: z.number().default(5),
@@ -115,7 +179,7 @@ export const styleRecipeSchema = z.object({
   scrimAlpha: z.number().default(0.0), // caption/graphic backing scrim; v7=0, noir raises it
   captionStyle: z.enum(["karaoke", "summary"]).default("summary"),
   // Preset — drives branching across all components (cards, scrim, placement, mutual exclusivity)
-  preset: z.enum(["thuy-style-oneshot", "classic"]).default("thuy-style-oneshot"),
+  preset: z.enum(["thuy-style-oneshot", "thuy-style-nhieu-canh", "classic", "anh-sac-podcast"]).default("thuy-style-oneshot"),
 });
 
 export const graphicSchema = z.object({
@@ -164,10 +228,33 @@ export const graphicSchema = z.object({
     "broll-cta",
     // fullscreen kinetic keyword B-roll (100% full frame)
     "fullscreen-keyword",
+    // Hierarchical Idea Headlines in graphics track:
+    "3-tier",
+    "stat-punch",
+    "split-contrast",
+    "tag-headline",
+    // Anh-sac style graphic cards & typography:
+    "grid-flat-card",
+    "number-badge",
+    "kinetic-pop",
+    "staggered-lines",
+    "glow-ambient",
+    "asymmetric-trio",
+    "stacked-contrast",
+    "multiblock-flow",
   ]),
   startMs: z.number(),
   endMs: z.number(),
   text: z.string().default(""),
+  // optional headline metadata
+  header: z.string().optional(),
+  keyword: z.string().optional(),
+  sub: z.string().optional(),
+  subtitle: z.string().optional(),
+  tag: z.string().optional(),
+  topText: z.string().optional(),
+  bottomText: z.string().optional(),
+  highlightWord: z.string().optional(),
   // optional extras for richer graphics
   value: z.number().optional(), // number-counter
   suffix: z.string().optional(), // number-counter ("%", "phút")
@@ -185,7 +272,6 @@ export const graphicSchema = z.object({
   items: z.array(z.string()).optional(),
   left: z.string().optional(),
   right: z.string().optional(),
-  subtitle: z.string().optional(),
   // info-table: rows of {k,v}
   rows: z.array(z.object({ k: z.string(), v: z.string() })).optional(),
   // stat-compare: two labeled metrics
@@ -207,6 +293,10 @@ export const graphicSchema = z.object({
   emphasis: z.string().optional(),
   sourceClip: z.string().optional(),
   adVariant: z.enum(["talking", "spotlight", "black-card", "red-alert", "list", "book"]).optional(),
+  // Anh-sac style fields
+  iconType: z.enum(["crane", "timeline", "audio-wave", "camera", "book", "warning", "lightbulb"]).optional(),
+  numberValue: z.number().optional(),
+  secondaryText: z.string().optional(),
 });
 
 export const brollSchema = z.object({

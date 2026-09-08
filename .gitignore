@@ -11,4 +11,8 @@ analysis/
 .DS_Store
 Thumbs.db
 public/music/*
+public/demo/
 dist/
+.gemini/
+*.pyc
+

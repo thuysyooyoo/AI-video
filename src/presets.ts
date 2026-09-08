@@ -3,7 +3,7 @@
  * Both Reel.tsx (render) and Python pipeline (EDL generation) read from this.
  */
 
-export type PresetName = "thuy-style-oneshot" | "classic";
+export type PresetName = "thuy-style-oneshot" | "thuy-style-nhieu-canh" | "classic" | "anh-sac-podcast";
 
 export interface PresetConfig {
   /** Display name */
@@ -19,7 +19,7 @@ export interface PresetConfig {
   /** Use Hierarchical Idea Headlines (3-tier, stat-punch, split-contrast, tag-headline) */
   useHierarchicalHeadlines: boolean;
   /** Bottom scrim style */
-  scrimMode: "subtle" | "blur-vignette";
+  scrimMode: "subtle" | "blur-vignette" | "top-only" | "none";
   /** Card/graphic placement zone */
   cardPlacement: "center" | "top-safe";
   /** B-roll duration matches full spoken sentence length */
@@ -41,6 +41,18 @@ export const PRESETS: Record<PresetName, PresetConfig> = {
     dynamicBrollDuration: true,
     injectFullscreenBroll: true,
   },
+  "thuy-style-nhieu-canh": {
+    name: "Thuy Style Nhiều Cảnh",
+    captionMutualExclusion: true,
+    iconsEnabled: false,
+    allowBoxyCards: false,
+    allowEmojis: false,
+    useHierarchicalHeadlines: true,
+    scrimMode: "top-only",
+    cardPlacement: "top-safe",
+    dynamicBrollDuration: true,
+    injectFullscreenBroll: true,
+  },
   classic: {
     name: "Classic Style",
     captionMutualExclusion: false,
@@ -52,6 +64,18 @@ export const PRESETS: Record<PresetName, PresetConfig> = {
     cardPlacement: "center",
     dynamicBrollDuration: false,
     injectFullscreenBroll: false,
+  },
+  "anh-sac-podcast": {
+    name: "Anh Sắc Podcast Style",
+    captionMutualExclusion: true,
+    iconsEnabled: true,
+    allowBoxyCards: false,
+    allowEmojis: false,
+    useHierarchicalHeadlines: true,
+    scrimMode: "subtle",
+    cardPlacement: "center",
+    dynamicBrollDuration: true,
+    injectFullscreenBroll: true,
   },
 };
 
