@@ -90,13 +90,41 @@ Skill này kích hoạt preset `thuy-style-oneshot` trong hệ thống dựng **
       - Giữ khoảng cách tối thiểu giữa 2 SFX từ `1.2s – 1.8s` để tránh mệt tai.
       - Quy tắc Pre-roll 65ms (âm thanh đi trước đỉnh hình ảnh 40–65ms) và cân bằng âm lượng (0.45 – 0.75) để âm thanh sắc bén mà tuyệt đối không át tiếng người nói.
 
-   ### H. Bộ 9 Hiệu Ứng Chuyển Cảnh CapCut Khóa Cứng SFX (BẮT BUỘC TUYỆT ĐỐI)
+   ### H. Bộ 9 Hiệu Ứng Chuyển Cảnh CapCut 2-Layer Khóa Cứng SFX (BẮT BUỘC TUYỆT ĐỐI)
     - **QUY TẮC CỐ ĐỊNH BẮT BUỘC**:
-      - Khi có nhu cầu sử dụng chuyển cảnh (trong `tracks.transitions` hoặc khi đổi phân đoạn/cắt cảnh), **CHỈ ĐƯỢC PHÉP SỬ DỤNG 1 TRONG 9 HIỆU ỨNG CHUYỂN CẢNH CAPCUT** đã chuẩn hóa: `glare-ii`, `phone-reveal`, `paper-ball`, `glitch`, `fade-down`, `blink`, `wave-right`, `swipe-left`, `comic-cut`.
-      - **TUYỆT ĐỐI KHÔNG ĐƯỢC DÙNG BẤT KỲ HIỆU ỨNG TỰ SINH RA NÀO KHÁC** đối với các hiệu ứng chuyển cảnh.
+      - Khi có nhu cầu sử dụng chuyển cảnh (trong `tracks.transitions` hoặc khi đổi phân đoạn/cắt cảnh, B-roll), **CHỈ ĐƯỢC PHÉP SỬ DỤNG 1 TRONG 9 HIỆU ỨNG CHUYỂN CẢNH CAPCUT** đã chuẩn hóa: `glare-ii`, `phone-reveal`, `paper-ball`, `glitch`, `fade-down`, `blink`, `wave-right`, `swipe-left`, `comic-cut`.
+      - **TUYỆT ĐỐI KHÔNG DÙNG MOCK OVERLAY 1 LỚP (Single-layer CSS)**: Chuyển cảnh bắt buộc chạy qua Engine 2 lớp thật `CapCutTwoLayerTransitions` (Clip A bị xé/cuộn/trượt để lộ Clip B bên dưới với timeline chạy liên tục qua `startFromA` và `startFromB`).
+      - **QUY TẮC ĐIỂM CẮT CẢNH (CUT-POINT PLACEMENT CONTRACT)**:
+        + Chuyển cảnh CapCut bản chất là cầu nối giữa 2 cảnh quay. **TUYỆT ĐỐI KHÔNG đặt chuyển cảnh lơ lửng giữa câu nói của A-roll khi không có đổi cảnh**.
+        + BẮT BUỘC neo tâm chuyển cảnh tại điểm cắt cảnh:
+          * Vào B-roll: `startMs = broll.startMs - (durationMs / 2)`.
+          * Thoát B-roll: `startMs = broll.endMs - (durationMs / 2)`.
+          * Đổi phân cảnh lớn (jump-cut sang góc máy/ý mới): neo tâm tại timestamp cắt phân cảnh.
+      - **BẢNG 9 HIỆU ỨNG CHUẨN XÁC (FRAME, DURATION, DIRECTION & SFX)**:
+        1. `glare-ii`: 16 frames (533ms), `direction: "right"`, SFX: `glare-burn` (vol: 0.90).
+        2. `phone-reveal`: 22 frames (733ms), `direction: "right"`, SFX: `phone-shutter-1` (vol: 0.95).
+        3. `paper-ball`: 20 frames (667ms), `direction: "right"`, SFX: `paper-ball-yt` (vol: 0.95).
+        4. `glitch`: 14 frames (467ms), `direction: "right"`, SFX: `glitch-cut` (vol: 0.85).
+        5. `fade-down`: 14 frames (467ms), `direction: "down"`, SFX: `fade-woosh` (vol: 0.90).
+        6. `blink`: 8 frames (267ms), `direction: "right"`, SFX: `click` (vol: 0.95).
+        7. `wave-right`: 16 frames (533ms), `direction: "right"`, SFX: `wave-sparkle` (vol: 0.90).
+        8. `swipe-left`: 10 frames (333ms), `direction: "left"`, SFX: `whoosh-fast` (vol: 0.95).
+        9. `comic-cut`: 20 frames (667ms), `direction: "right"`, SFX: `comic-paper-tear` (vol: 0.95).
+      - **Quy tắc Zod Schema & SFX Coupling**:
+        + Trường `direction` trong EDL chỉ nhận `["up", "down", "left", "right"]`. Cấm dùng `"center"`.
+        + Mỗi transition bắt buộc có SFX tương ứng trong `tracks.sfx` với `startMs` đồng bộ.
       - **Quy tắc ngắt âm dứt điểm (Anti-Bleed Rule)**: SFX khóa cứng tương ứng bắt buộc phải dừng hẳn khi hết chuyển cảnh (âm lượng về 0.0 RMS ở 2 frame cuối, unmount Sequence, không lấn sang cảnh sau).
-      - **Quy tắc phong cách**: Chỉ chọn 2–3 kiểu chủ đạo cho một video; chuyển cảnh ánh sáng (`glare-ii`, `glitch`) ưu tiên tone vàng ấm `#FFE600`.
-      - → **Bắt buộc tra cứu bảng chi tiết (mã hiệu ứng, frame, file SFX, EDL Schema)** tại [transitions-guide.md](../tisa-ai-editor-agent/references/transitions-guide.md) (hoặc `tisa-ai-editor-agent/references/transitions-guide.md`, file code `src/components/capcut-transitions-registry.ts`).
+      - → **Bắt buộc tra cứu bảng chi tiết** tại [transitions-guide.md](../tisa-ai-editor-agent/references/transitions-guide.md) và file code `src/components/capcut-transitions-registry.ts`.
+
+   ### I. Quy Tắc Nhịp Điệu Câu Thoại: Mỗi Câu Nói Bắt Buộc Có Hiệu Ứng Đi Kèm (SENTENCE-COMPLETION VISUAL BEATS)
+   - **BẮT BUỘC 100%**: Cứ mỗi khi người nói hoàn thành **1 câu nói / 1 ý trọn vẹn**, trên màn hình **BẮT BUỘC PHẢI CÓ MỘT BIẾN CHUYỂN THỊ GIÁC (VISUAL EVENT)** xuất hiện. Tuyệt đối không để xảy ra "khoảng chết thị giác" (dead visual zone) nơi câu nói trôi qua chỉ với mỗi dòng phụ đề karaoke đơn điệu.
+   - **AI PHÂN TÍCH NGỮ NGHĨA ĐỂ CHỌN ĐÚNG LOẠI HIỆU ỨNG (CẤM CHỌN BỪA HOẶC MÁY MÓC)**:
+     1. **Câu mô tả hành động, bối cảnh, tài sản, chứng cứ, hiện vật thực tế** (đất đai, sổ đỏ, gia đình, công nghệ, công xưởng, thị trường...) $\rightarrow$ **Chọn B-Roll Full Khung Chiều Sâu** (kèm Ken Burns slow zoom, nền chiều sâu phù hợp, từ khóa punchline và chuyển cảnh CapCut 2-layer vào/ra).
+     2. **Câu chứa con số, tỷ lệ, điều kiện định lượng, văn bản luật** (Nghị định 37, 3 lần, 80%, 4 bước...) $\rightarrow$ **Chọn Kinetic Headline Số Liệu (`stat-punch`, `3-tier`)** bôi vàng rực `#FFE600` với cơ chế Hai Pha Xuất Hiện (Two-Phase In).
+     3. **Câu chứa mâu thuẫn, nghịch lý, so sánh đối lập** (tưởng lời hóa lỗ, trước vs nay, nên vs không nên...) $\rightarrow$ **Chọn Hiệu Ứng Đối Lập (`split-contrast`, `comparison`, `stacked-contrast`)**.
+     4. **Câu đúc kết triết lý, lời khuyên vàng, cú chốt luận điểm** $\rightarrow$ **Chọn Kinetic Headline Đòn Bẩy (`asymmetric-trio`, `multiblock-flow`, `kinetic-statement`)**.
+     5. **Câu chuyển hướng chủ đề, lật ngược vấn đề, bước sang phân đoạn mới** $\rightarrow$ **Chọn Chuyển Cảnh CapCut 2-Layer** (`glare-ii`, `phone-reveal`, `paper-ball`, `comic-cut`, `wave-right`, `glitch`, `fade-down`, `blink`, `swipe-left`) neo đúng điểm cắt và gắn SFX khóa cứng 1:1.
+   - **Quy tắc Luân Phiên & Chống Trùng Lặp**: Không dùng liên tiếp 2 hiệu ứng cùng loại cho 2 câu nói liền kề để giữ nhịp độ thị giác luôn kích thích, sống động theo chuẩn viral retention.
 
 4. **Quy Chuẩn Phụ Đề Thoại (Captions) – Bắt Buộc 1 Dòng Duy Nhất & Hiển Thị Liên Tục**:
    - **BẮT BUỘC CHỈ HIỂN THỊ ĐÚNG 1 DÒNG DUY NHẤT (Single-line Only)**:

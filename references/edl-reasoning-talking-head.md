@@ -36,6 +36,20 @@ place them WITH INTENT, do not spray high everywhere.
 THE MEANING as the keyword (the number, the strong verb, the core noun), not the longest
 word or the word in the middle of the sentence.
 
+**Staggered Audio-Synced Headline Timing (CHỈ ÁP DỤNG CHO TIÊU ĐỀ HEADLINE, KHÔNG ÁP DỤNG CHO PHỤ ĐỀ TRANSCRIPT):**
+- Phân tách thời điểm xuất hiện: Phần dẫn dắt/bối cảnh (`header`, `sub`, `tag`) xuất hiện trước ở `frame 0` của graphic để neo giữ mắt người xem.
+- Từ khóa vàng (`keyword`): Phải khớp thời điểm người nói phát âm (`keywordStartMs`). Trước thời điểm này từ khóa vàng ẩn hoàn toàn, khi chạm từ khóa mới bùng nổ vàng rực.
+- Giữ toàn bộ headline trên màn hình đến hết câu/ý của người nói rồi cùng thoát cảnh (hold & synchronized out).
+**Sentence-Completion Visual Beats (Mỗi câu nói hoàn chỉnh BẮT BUỘC có hiệu ứng đi kèm):**
+- Cứ mỗi khi người nói hoàn thành **1 câu nói / 1 ý trọn vẹn**, BẮT BUỘC phải xuất hiện một hiệu ứng thị giác điện ảnh. Tuyệt đối không để xảy ra "khoảng chết thị giác" chỉ có phụ đề chạy đơn độc.
+- **AI phân tích nội dung ngữ nghĩa câu nói**:
+  1. *Hành động, hiện vật, chứng cứ, bối cảnh thực tế* $\rightarrow$ B-roll Full Khung Chiều Sâu kèm slow zoom & punchline vàng.
+  2. *Con số, tỷ lệ, văn bản luật, điều kiện định lượng* $\rightarrow$ Kinetic Headline số liệu (`stat-punch`, `3-tier` số vàng).
+  3. *Đối lập, nghịch lý, mâu thuẫn* $\rightarrow$ Hiệu ứng đối lập (`split-contrast`, `comparison`, `stacked-contrast`).
+  4. *Triết lý, lời khuyên, đúc kết luận điểm* $\rightarrow$ Headline Đòn Bẩy (`asymmetric-trio`, `multiblock-flow`, `kinetic-statement`).
+  5. *Chuyển hướng chủ đề, sang phân đoạn mới* $\rightarrow$ Chuyển Cảnh CapCut 2-Layer (`phone-reveal`, `paper-ball`, `comic-cut`...).
+- Luân phiên các nhóm hiệu ứng giữa các câu liền kề, cấm chọn bừa hoặc lặp máy móc.
+
 ## Pass 3, SELF-CRITIQUE (before writing the file)
 
 Review your own plan; every graphic must answer AT LEAST 1 of these 3:

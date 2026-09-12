@@ -15,6 +15,55 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+VI_SPELLING_FIXES = {
+    "thỏ mái": "thoải mái",
+    "đắt lực": "đắc lực",
+    "ông Kinh": "ống kính",
+    "ông kinh": "ống kính",
+    "mít ro": "micro",
+    "mít": "mic",
+    "hoặc máy": "quạt máy",
+    "chằm âm": "trầm ấm",
+    "khoác học": "khóa học",
+    "canh chị": "các anh chị",
+    "dựng kim": "dựng phim",
+    "quay kim": "quay phim",
+}
+
+
+def normalize_vietnamese_words(words):
+    """Normalize common Whisper mis-transcriptions for Vietnamese speech."""
+    if not words:
+        return words
+    
+    # 1. Single word level fixes
+    single_word_map = {
+        "thỏ": "thoải",
+        "mít": "mic",
+        "khoác": "khóa",
+    }
+    
+    i = 0
+    while i < len(words):
+        # Check two-word phrases
+        if i < len(words) - 1:
+            pair = f"{words[i]['text']} {words[i+1]['text']}".lower()
+            for wrong, right in VI_SPELLING_FIXES.items():
+                if pair == wrong.lower():
+                    right_parts = right.split()
+                    if len(right_parts) == 2:
+                        words[i]['text'] = right_parts[0]
+                        words[i+1]['text'] = right_parts[1]
+                    elif len(right_parts) == 1:
+                        words[i]['text'] = right_parts[0]
+                        words[i+1]['text'] = ""
+                    break
+        i += 1
+
+    # Filter any empty words if combined
+    return [w for w in words if w['text']]
+
+
 def transcribe_local(path: Path, language="vi", model_size="small", device="auto", compute_type="auto"):
     try:
         from faster_whisper import WhisperModel
@@ -39,6 +88,10 @@ def transcribe_local(path: Path, language="vi", model_size="small", device="auto
                 "startMs": int(w.start * 1000),
                 "endMs": int(w.end * 1000),
             })
+    
+    if language == "vi":
+        words = normalize_vietnamese_words(words)
+
     return {"language": getattr(info, "language", language) or language, "words": words}
 
 

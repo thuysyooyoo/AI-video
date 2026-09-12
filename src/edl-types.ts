@@ -41,6 +41,7 @@ export const captionSchema = z.object({
   topText: z.string().optional(),
   bottomText: z.string().optional(),
   highlightWord: z.string().optional(),
+  keywordStartMs: z.number().optional(),
 });
 
 export const effectSchema = z.object({
@@ -255,6 +256,22 @@ export const graphicSchema = z.object({
   topText: z.string().optional(),
   bottomText: z.string().optional(),
   highlightWord: z.string().optional(),
+  keywordStartMs: z.number().optional(),
+  // fullscreen-keyword broll background variant & custom image
+  bgVariant: z.enum([
+    "pure-black",
+    "grid-caro",
+    "paper-crumpled-black",
+    "paper-crumpled-white",
+    "dark-gradient",
+    "dark-brick",
+    "blurred-speaker",
+    "radial-navy",
+    "concrete-grunge",
+    "carbon-mesh",
+    "lens-bokeh",
+  ]).optional(),
+  bgCustomImage: z.string().optional(),
   // optional extras for richer graphics
   value: z.number().optional(), // number-counter
   suffix: z.string().optional(), // number-counter ("%", "phút")

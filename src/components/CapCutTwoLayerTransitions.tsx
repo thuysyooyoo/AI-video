@@ -8,6 +8,8 @@ export interface TwoLayerTransitionProps {
   cardWidth?: number;
   cardHeight?: number;
   intensity?: number;
+  startFromA?: number;
+  startFromB?: number;
 }
 
 // -----------------------------------------------------------------------------
@@ -18,9 +20,12 @@ export const GlareIITwoLayer: React.FC<TwoLayerTransitionProps> = ({
   clipB,
   progress,
   intensity = 1.25,
+  startFromA,
+  startFromB,
 }) => {
   const isAfterCut = progress >= 0.5;
   const activeClip = isAfterCut ? clipB : clipA;
+  const activeStartFrom = isAfterCut ? startFromB : startFromA;
 
   // Flash curve peaking at 0.5
   const flashAlpha = Math.sin(progress * Math.PI) * intensity;
@@ -35,6 +40,7 @@ export const GlareIITwoLayer: React.FC<TwoLayerTransitionProps> = ({
       {/* Video with exposure bloom */}
       <OffthreadVideo volume={0}
         src={activeClip}
+        startFrom={activeStartFrom}
         style={{
           width: "100%",
           height: "100%",
@@ -85,6 +91,8 @@ export const PhoneRevealTwoLayer: React.FC<TwoLayerTransitionProps> = ({
   progress,
   cardWidth = 720,
   cardHeight = 1120,
+  startFromA,
+  startFromB,
 }) => {
   // Proportional phone dimensions: 52% card width, 68% card height
   const phoneW = cardWidth * 0.52;
@@ -113,6 +121,7 @@ export const PhoneRevealTwoLayer: React.FC<TwoLayerTransitionProps> = ({
       {/* Background: Clip A */}
       <OffthreadVideo volume={0}
         src={clipA}
+        startFrom={startFromA}
         style={{
           width: "100%",
           height: "100%",
@@ -150,6 +159,7 @@ export const PhoneRevealTwoLayer: React.FC<TwoLayerTransitionProps> = ({
         {/* Inside Phone: Clip B */}
         <OffthreadVideo volume={0}
           src={clipB}
+          startFrom={startFromB}
           style={{
             width: "100%",
             height: "100%",
@@ -236,6 +246,8 @@ export const PaperBallTwoLayer: React.FC<TwoLayerTransitionProps> = ({
   progress,
   cardWidth = 720,
   cardHeight = 1120,
+  startFromA,
+  startFromB,
 }) => {
   // Scale curve: starts small (0.05) and rips open to 3.4
   const holeScale = interpolate(
@@ -259,6 +271,7 @@ export const PaperBallTwoLayer: React.FC<TwoLayerTransitionProps> = ({
       {/* Background: Clip A */}
       <OffthreadVideo volume={0}
         src={clipA}
+        startFrom={startFromA}
         style={{
           width: "100%",
           height: "100%",
@@ -331,6 +344,7 @@ export const PaperBallTwoLayer: React.FC<TwoLayerTransitionProps> = ({
           >
             <OffthreadVideo volume={0}
               src={clipB}
+              startFrom={startFromB}
               style={{
                 width: "100%",
                 height: "100%",
@@ -351,6 +365,8 @@ export const GlitchTwoLayer: React.FC<TwoLayerTransitionProps> = ({
   clipA,
   clipB,
   progress,
+  startFromA,
+  startFromB,
 }) => {
   const SLICE_COUNT = 8;
   const sliceHeightPct = 100 / SLICE_COUNT;
@@ -371,6 +387,7 @@ export const GlitchTwoLayer: React.FC<TwoLayerTransitionProps> = ({
         // Alternating cutover: even slices switch earlier than odd slices
         const sliceCutProgress = 0.35 + (i % 3) * 0.1;
         const sliceClip = progress >= sliceCutProgress ? clipB : clipA;
+        const sliceStartFrom = progress >= sliceCutProgress ? startFromB : startFromA;
 
         return (
           <div
@@ -397,6 +414,7 @@ export const GlitchTwoLayer: React.FC<TwoLayerTransitionProps> = ({
             >
               <OffthreadVideo volume={0}
                 src={sliceClip}
+                startFrom={sliceStartFrom}
                 style={{
                   width: "100%",
                   height: "100%",
@@ -459,6 +477,8 @@ export const FadeDownTwoLayer: React.FC<TwoLayerTransitionProps> = ({
   clipA,
   clipB,
   progress,
+  startFromA,
+  startFromB,
 }) => {
   // Smooth power3 ease out
   const easeProgress = 1 - Math.pow(1 - progress, 2.5);
@@ -476,6 +496,7 @@ export const FadeDownTwoLayer: React.FC<TwoLayerTransitionProps> = ({
       {/* Background: Clip A */}
       <OffthreadVideo volume={0}
         src={clipA}
+        startFrom={startFromA}
         style={{
           width: "100%",
           height: "100%",
@@ -500,6 +521,7 @@ export const FadeDownTwoLayer: React.FC<TwoLayerTransitionProps> = ({
       >
         <OffthreadVideo volume={0}
           src={clipB}
+          startFrom={startFromB}
           style={{
             width: "100%",
             height: "100%",
@@ -536,10 +558,13 @@ export const BlinkTwoLayer: React.FC<TwoLayerTransitionProps> = ({
   progress,
   cardWidth = 720,
   cardHeight = 1120,
+  startFromA,
+  startFromB,
 }) => {
   // Cut happens at midpoint (progress 0.5)
   const isCutPassed = progress >= 0.5;
   const activeClip = isCutPassed ? clipB : clipA;
+  const activeStartFrom = isCutPassed ? startFromB : startFromA;
 
   // Closing progress: 0 -> 1 (at 0.46), stays closed until 0.54, then opens 1 -> 0
   const closeProgress = interpolate(
@@ -563,6 +588,7 @@ export const BlinkTwoLayer: React.FC<TwoLayerTransitionProps> = ({
       {/* Video */}
       <OffthreadVideo volume={0}
         src={activeClip}
+        startFrom={activeStartFrom}
         style={{
           width: "100%",
           height: "100%",
@@ -632,6 +658,8 @@ export const WaveRightTwoLayer: React.FC<TwoLayerTransitionProps> = ({
   progress,
   cardWidth = 720,
   cardHeight = 1120,
+  startFromA,
+  startFromB,
 }) => {
   // Wave travels from -cardWidth*0.4 to cardWidth*1.5
   const waveX = interpolate(progress, [0, 1], [-cardWidth * 0.35, cardWidth * 1.45]);
@@ -645,6 +673,7 @@ export const WaveRightTwoLayer: React.FC<TwoLayerTransitionProps> = ({
       {/* Background: Clip A */}
       <OffthreadVideo volume={0}
         src={clipA}
+        startFrom={startFromA}
         style={{
           width: "100%",
           height: "100%",
@@ -662,6 +691,7 @@ export const WaveRightTwoLayer: React.FC<TwoLayerTransitionProps> = ({
       >
         <OffthreadVideo volume={0}
           src={clipB}
+          startFrom={startFromB}
           style={{
             width: "100%",
             height: "100%",
@@ -723,6 +753,8 @@ export const SwipeLeftTwoLayer: React.FC<TwoLayerTransitionProps> = ({
   clipA,
   clipB,
   progress,
+  startFromA,
+  startFromB,
 }) => {
   // Cubic ease for snappy whip-pan feel
   const easeProgress =
@@ -751,6 +783,7 @@ export const SwipeLeftTwoLayer: React.FC<TwoLayerTransitionProps> = ({
       >
         <OffthreadVideo volume={0}
           src={clipA}
+          startFrom={startFromA}
           style={{
             width: "100%",
             height: "100%",
@@ -770,6 +803,7 @@ export const SwipeLeftTwoLayer: React.FC<TwoLayerTransitionProps> = ({
       >
         <OffthreadVideo volume={0}
           src={clipB}
+          startFrom={startFromB}
           style={{
             width: "100%",
             height: "100%",
@@ -804,6 +838,8 @@ export const ComicCutTwoLayer: React.FC<TwoLayerTransitionProps> = ({
   clipA,
   clipB,
   progress,
+  startFromA,
+  startFromB,
 }) => {
   // Smooth tearing progress (Math.pow 1.4 for natural tearing rip)
   const tearProgress = Math.pow(progress, 1.4);
@@ -834,6 +870,7 @@ export const ComicCutTwoLayer: React.FC<TwoLayerTransitionProps> = ({
         {/* Full color Clip B */}
         <OffthreadVideo volume={0}
           src={clipB}
+          startFrom={startFromB}
           style={{
             width: "100%",
             height: "100%",
@@ -854,6 +891,7 @@ export const ComicCutTwoLayer: React.FC<TwoLayerTransitionProps> = ({
             {/* High-contrast B&W copy of Clip B */}
             <OffthreadVideo volume={0}
               src={clipB}
+              startFrom={startFromB}
               style={{
                 width: "100%",
                 height: "100%",
@@ -908,6 +946,7 @@ export const ComicCutTwoLayer: React.FC<TwoLayerTransitionProps> = ({
         >
           <OffthreadVideo volume={0}
             src={clipA}
+            startFrom={startFromA}
             style={{
               width: "100%",
               height: "100%",
@@ -948,6 +987,7 @@ export const ComicCutTwoLayer: React.FC<TwoLayerTransitionProps> = ({
         >
           <OffthreadVideo volume={0}
             src={clipA}
+            startFrom={startFromA}
             style={{
               width: "100%",
               height: "100%",

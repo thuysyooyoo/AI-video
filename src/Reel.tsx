@@ -65,10 +65,24 @@ export const Reel: React.FC<{ edl: Edl }> = ({ edl }) => {
           const dur = msToFrames(b.endMs - b.startMs, fps);
           return (
             <Sequence key={`broll-${i}`} from={from} durationInFrames={dur}>
-              <OffthreadVideo src={staticFile(b.src!)} />
+              <OffthreadVideo
+                src={staticFile(b.src!)}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                muted
+              />
             </Sequence>
           );
         })}
+
+      {/* Timeline transitions render the raw video + brolls with effects. They MUST be layered UNDER the scrim, captions, and graphics so they don't hide the UI during transitions. */}
+      <TransitionLayer
+        transitions={tracks.transitions}
+        sourceClip={source.clip}
+        brolls={tracks.broll}
+        accent={recipe.accent}
+        accent2={recipe.accent2}
+        highlight={recipe.highlightColor}
+      />
 
       {/* Mask burned-in original caption with a blurred band, if configured */}
       {style.maskBandHeightPct > 0 ? (
@@ -109,7 +123,7 @@ export const Reel: React.FC<{ edl: Edl }> = ({ edl }) => {
           ...tracks.graphics
             .filter((g) => g.type !== "hook" && g.type !== "cta")
             .map((g) => ({ startMs: g.startMs, endMs: g.endMs })),
-          ...tracks.broll.map((b) => ({ startMs: b.startMs, endMs: b.endMs })),
+          ...tracks.broll.filter((b) => !b.src).map((b) => ({ startMs: b.startMs, endMs: b.endMs })),
         ] : []}
       />
 
@@ -124,18 +138,17 @@ export const Reel: React.FC<{ edl: Edl }> = ({ edl }) => {
         const gAccent2 = useSecondary ? recipe.accent : recipe.accent2;
         return (
           <Sequence key={`gfx-${i}`} from={from} durationInFrames={dur}>
-            <GraphicLayer graphic={g} accent={gAccent} accent2={gAccent2} placement={presetConfig.cardPlacement} iconsEnabled={presetConfig.iconsEnabled} />
+            <GraphicLayer
+              graphic={g}
+              accent={gAccent}
+              accent2={gAccent2}
+              placement={presetConfig.cardPlacement}
+              iconsEnabled={presetConfig.iconsEnabled}
+              sourceClip={source.clip}
+            />
           </Sequence>
         );
       })}
-
-      {/* Timeline transitions are their own EDL track, layered above graphics. */}
-      <TransitionLayer
-        transitions={tracks.transitions}
-        accent={recipe.accent}
-        accent2={recipe.accent2}
-        highlight={recipe.highlightColor}
-      />
 
       {/* SFX: explicit cues when present, otherwise smart fallback from graphics/transitions */}
       <SfxLayer graphics={tracks.graphics} transitions={tracks.transitions} cues={tracks.sfx} />

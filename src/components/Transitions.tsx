@@ -12,10 +12,22 @@ import {
   AbsoluteFill,
   Sequence,
   interpolate,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
 import type { Transition } from "../edl-types";
+import {
+  GlareIITwoLayer,
+  PhoneRevealTwoLayer,
+  PaperBallTwoLayer,
+  GlitchTwoLayer,
+  FadeDownTwoLayer,
+  BlinkTwoLayer,
+  WaveRightTwoLayer,
+  SwipeLeftTwoLayer,
+  ComicCutTwoLayer,
+} from "./CapCutTwoLayerTransitions";
 
 const msToFrames = (ms: number, fps: number) => Math.round((ms / 1000) * fps);
 
@@ -946,10 +958,12 @@ const renderTransition = (t: Transition, color: string, accent2: string) => {
 
 export const TransitionLayer: React.FC<{
   transitions: Transition[];
+  sourceClip?: string;
+  brolls?: Array<{ startMs: number; endMs: number; src?: string }>;
   accent: string;
   accent2: string;
   highlight: string;
-}> = ({ transitions, accent, accent2, highlight }) => {
+}> = ({ transitions, sourceClip, brolls = [], accent, accent2, highlight }) => {
   const { fps } = useVideoConfig();
   const colorFor = (t: Transition) =>
     t.colorRole === "accent2" ? accent2 : t.colorRole === "highlight" ? highlight : accent;
@@ -961,12 +975,111 @@ export const TransitionLayer: React.FC<{
         const color = colorFor(t);
         return (
           <Sequence key={`transition-${i}`} from={from} durationInFrames={dur}>
-            {renderTransition(t, color, accent2)}
+            <TransitionItemWrapper
+              transition={t}
+              color={color}
+              accent2={accent2}
+              sourceClip={sourceClip}
+              brolls={brolls}
+              fromFrame={from}
+              durationInFrames={dur}
+            />
           </Sequence>
         );
       })}
     </>
   );
+};
+
+const TransitionItemWrapper: React.FC<{
+  transition: Transition;
+  color: string;
+  accent2: string;
+  sourceClip?: string;
+  brolls: Array<{ startMs: number; endMs: number; src?: string }>;
+  fromFrame: number;
+  durationInFrames: number;
+}> = ({ transition: t, color, accent2, sourceClip, brolls, fromFrame, durationInFrames }) => {
+  const frame = useCurrentFrame();
+  const p = interpolate(frame, [0, durationInFrames], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  const defaultClip = sourceClip ? staticFile(sourceClip) : staticFile("raw/clip_goc-tight.mp4");
+  let clipA = defaultClip;
+  let clipB = defaultClip;
+  let startFromA = fromFrame;
+  let startFromB = 0;
+
+  const transMid = (t.startMs + t.endMs) / 2;
+  const enteringBroll = brolls.find((b) => Math.abs(b.startMs - transMid) <= 1500 && b.src);
+  const exitingBroll = brolls.find((b) => Math.abs(b.endMs - transMid) <= 1500 && b.src);
+
+  if (enteringBroll) {
+    clipA = defaultClip;
+    startFromA = fromFrame;
+    clipB = staticFile(enteringBroll.src!);
+    startFromB = 0;
+  } else if (exitingBroll) {
+    clipA = staticFile(exitingBroll.src!);
+    startFromA = Math.max(0, fromFrame - Math.round((exitingBroll.startMs / 1000) * 30));
+    clipB = defaultClip;
+    startFromB = fromFrame;
+  }
+
+  switch (t.type) {
+    case "paper-ball":
+      return (
+        <PaperBallTwoLayer
+          clipA={clipA}
+          clipB={clipB}
+          progress={p}
+          cardWidth={1080}
+          cardHeight={1920}
+          startFromA={startFromA}
+          startFromB={startFromB}
+        />
+      );
+    case "comic-cut":
+      return (
+        <ComicCutTwoLayer
+          clipA={clipA}
+          clipB={clipB}
+          progress={p}
+          cardWidth={1080}
+          cardHeight={1920}
+          startFromA={startFromA}
+          startFromB={startFromB}
+        />
+      );
+    case "phone-reveal":
+      return (
+        <PhoneRevealTwoLayer
+          clipA={clipA}
+          clipB={clipB}
+          progress={p}
+          cardWidth={1080}
+          cardHeight={1920}
+          startFromA={startFromA}
+          startFromB={startFromB}
+        />
+      );
+    case "glare-ii":
+      return <GlareIITwoLayer clipA={clipA} clipB={clipB} progress={p} intensity={1.25} startFromA={startFromA} startFromB={startFromB} />;
+    case "glitch":
+      return <GlitchTwoLayer clipA={clipA} clipB={clipB} progress={p} startFromA={startFromA} startFromB={startFromB} />;
+    case "fade-down":
+      return <FadeDownTwoLayer clipA={clipA} clipB={clipB} progress={p} startFromA={startFromA} startFromB={startFromB} />;
+    case "blink":
+      return <BlinkTwoLayer clipA={clipA} clipB={clipB} progress={p} startFromA={startFromA} startFromB={startFromB} />;
+    case "wave-right":
+      return <WaveRightTwoLayer clipA={clipA} clipB={clipB} progress={p} startFromA={startFromA} startFromB={startFromB} />;
+    case "swipe-left":
+      return <SwipeLeftTwoLayer clipA={clipA} clipB={clipB} progress={p} startFromA={startFromA} startFromB={startFromB} />;
+    default:
+      return renderTransition(t, color, accent2);
+  }
 };
 
 /**

@@ -64,12 +64,14 @@ export const GraphicLayer: React.FC<{
   accent2: string;
   placement?: 'center' | 'top-safe';
   iconsEnabled?: boolean;
+  sourceClip?: string;
 }> = ({
   graphic,
   accent,
   accent2,
   placement = 'top-safe',
   iconsEnabled = true,
+  sourceClip,
 }) => {
   const recipe = useStyle();
   const scale = Math.min(1, Math.max(0.45, recipe.textScale));
@@ -219,6 +221,9 @@ export const GraphicLayer: React.FC<{
           subtitle={graphic.subtitle}
           accent={accent}
           accent2={accent2}
+          bgVariant={graphic.bgVariant}
+          bgCustomImage={graphic.bgCustomImage}
+          sourceClip={sourceClip}
         />
       );
       break;
@@ -233,9 +238,11 @@ export const GraphicLayer: React.FC<{
             headlineStyle: "3-tier",
             header: graphic.header,
             keyword: graphic.keyword,
-            sub: graphic.subtitle,
+            sub: graphic.subtitle || (graphic as any).sub,
+            keywordStartMs: graphic.keywordStartMs,
           }}
           accent={accent}
+          placement={placement === "center" ? "bottom" : "top"}
         />
       );
       break;
@@ -251,6 +258,7 @@ export const GraphicLayer: React.FC<{
             header: graphic.header,
             keyword: graphic.keyword,
             sub: graphic.subtitle,
+            keywordStartMs: graphic.keywordStartMs,
           }}
           accent={accent}
         />
@@ -268,6 +276,7 @@ export const GraphicLayer: React.FC<{
             topText: graphic.topText || graphic.header,
             bottomText: graphic.bottomText || graphic.subtitle,
             highlightWord: graphic.highlightWord || graphic.keyword,
+            keywordStartMs: graphic.keywordStartMs,
           }}
           accent={accent}
         />
@@ -287,6 +296,7 @@ export const GraphicLayer: React.FC<{
             keyword: graphic.keyword,
             highlightWord: graphic.highlightWord || graphic.keyword,
             sub: graphic.subtitle,
+            keywordStartMs: graphic.keywordStartMs,
           }}
           accent={accent}
           highlight={recipe.highlightColor}
@@ -379,6 +389,7 @@ export const GraphicLayer: React.FC<{
             header: graphic.header,
             keyword: graphic.keyword,
             sub: graphic.subtitle || (graphic as any).sub,
+            keywordStartMs: graphic.keywordStartMs,
           }}
           position={graphic.anchor === "bottom" ? "bottom" : "top"}
           accent={accent}
@@ -398,6 +409,7 @@ export const GraphicLayer: React.FC<{
             header: graphic.header,
             keyword: graphic.keyword,
             sub: graphic.subtitle || (graphic as any).sub,
+            keywordStartMs: graphic.keywordStartMs,
           }}
           position={graphic.anchor === "bottom" ? "bottom" : "top"}
           accent={accent}
@@ -417,6 +429,7 @@ export const GraphicLayer: React.FC<{
             header: graphic.header,
             keyword: graphic.keyword,
             sub: graphic.subtitle || (graphic as any).sub,
+            keywordStartMs: graphic.keywordStartMs,
           }}
           position={graphic.anchor === "bottom" ? "bottom" : "top"}
           accent={accent}

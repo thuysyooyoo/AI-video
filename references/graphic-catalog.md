@@ -36,6 +36,7 @@ Missing a required field → the engine **demotes** to `kinetic-statement` (no e
 | 2-tier stacked contrast | `stacked-contrast` | `header` (top phrase), `keyword` (power keyword) |
 | 3-block staggered flow | `multiblock-flow` | `header` (lead), `sub` (connector), `keyword` (climax) |
 | Floating topic/year | `glow-ambient` | `keyword` (main word/number), optional `sub` |
+| Fullscreen Keyword B-Roll (ngắt nhịp thị giác 1080x1920) | `fullscreen-keyword` | `text`; optional `subtitle`, `bgVariant` (`grid-caro` \| `paper-crumpled-black` \| `paper-crumpled-white` \| `dark-gradient` \| `dark-brick` \| `blurred-speaker`) |
 
 Optional fields shared by all types: `anchor` (top|center|bottom, the engine auto-avoids the face
 via face-zones when omitted), `visualWeight` (micro|minor|major|scene).

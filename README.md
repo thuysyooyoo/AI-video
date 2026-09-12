@@ -29,7 +29,7 @@
 | **Lớp phủ đáy (Bottom Scrim)** | **Blur 14px + tối 38%** ở 30% đáy video tạo chiều sâu | **KHÔNG CÓ (Bỏ 100% blur đáy)** để video trong trẻo | Gradient đen mờ tối giản | Gradient đen mờ nhẹ |
 | **Card viền hộp** | ❌ **CẤM TUYỆT ĐỐI** | ❌ **CẤM TUYỆT ĐỐI** | Card phẳng (Flat card) tối giản | ✅ Cho phép (`NeonIconCard`, `PremiumCard`...) |
 | **Icon / Emoji** | ❌ **CẤM TUYỆT ĐỐI** | ❌ **CẤM TUYỆT ĐỐI** | ❌ Không sử dụng | ✅ 10 SVG icon line-art |
-| **Headline ý chính** | 4 style phân tầng (`3-tier`, `stat-punch`, `split-contrast`, `tag-headline`) | 4 style phân tầng với keyword vàng và kinetic typography | Typography phẳng, font clean | Nằm bên trong các card viền hộp |
+| **Headline ý chính** | **Dùng chung bộ 9 styles** (AI tự phân tích ngữ cảnh để chọn `3-tier`, `stat-punch`, `split-contrast`...) | **Dùng chung bộ 9 styles** (AI tự phân tích ngữ cảnh để chọn `3-tier`, `stat-punch`, `split-contrast`...) | Typography phẳng, font clean | Nằm bên trong các card viền hộp |
 | **Độc quyền hiển thị (Mutual Exclusivity)** | ✅ Có Headline/B-roll ➔ Tự ẩn phụ đề | ✅ Có Headline/B-roll ➔ Tự ẩn phụ đề | ✅ Tự động ẩn theo nhịp nói | ❌ Card và phụ đề hiển thị cùng lúc |
 
 ---

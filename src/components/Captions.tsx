@@ -24,6 +24,7 @@ import {
   AsymmetricTrioHeadline,
   StackedContrastHeadline,
   MultiBlockFlowHeadline,
+  getKeywordDelayFrames,
 } from "./AnhSacKineticTypo";
 
 export const Captions: React.FC<{
@@ -129,18 +130,30 @@ const HeadlineRenderer: React.FC<{
  * Line 3 (Sub/Question): ~50px italic white
  * Sits directly on bottom 30% blur scrim (~20% from bottom)
  */
-export const ThreeTierHeadline: React.FC<{ cap: Caption; accent: string }> = ({ cap, accent }) => {
+export const ThreeTierHeadline: React.FC<{ cap: Caption; accent: string; placement?: "top" | "bottom" }> = ({
+  cap,
+  accent,
+  placement = "top",
+}) => {
   const frame = useCurrentFrame();
   const { fps, height } = useVideoConfig();
   const recipe = useStyle();
 
-  // Strict Bottom 30% zone (Y >= 70%):
-  // Sit cleanly on bottom dark scrim (4% from bottom = ~76px)
-  const paddingBottom = Math.round((height * 4) / 100);
-  const pop = spring({ frame, fps, config: { damping: 14, mass: 0.5 } });
-  const scale = interpolate(pop, [0, 1], [0.92, 1]);
-  const opacity = interpolate(pop, [0, 1], [0, 1]);
-  const translateY = interpolate(pop, [0, 1], [24, 0]);
+  // Two-phase in: Header / Sub appears at frame 0; Giant yellow keyword pops at audio sync time
+  const headerPop = spring({ frame, fps, config: { damping: 14, mass: 0.5 } });
+  const headerScale = interpolate(headerPop, [0, 1], [0.92, 1]);
+  const headerOpacity = interpolate(headerPop, [0, 1], [0, 1]);
+  const headerY = interpolate(headerPop, [0, 1], [16, 0]);
+
+  const kwDelayFrames = getKeywordDelayFrames(cap, fps, 0);
+  const kwFrame = frame - kwDelayFrames;
+  const isKwActive = kwFrame >= 0;
+  const kwPop = isKwActive
+    ? spring({ frame: kwFrame, fps, config: { damping: 10, mass: 0.4, stiffness: 200 } })
+    : 0;
+  const kwScale = isKwActive ? interpolate(kwPop, [0, 1], [0.82, 1]) : 0.8;
+  const kwOpacity = isKwActive ? interpolate(kwPop, [0, 1], [0, 1]) : 0;
+  const kwY = isKwActive ? interpolate(kwPop, [0, 1], [24, 0]) : 24;
 
   // Enforce rule: Max 6 words per line for 3-tier style
   const limitWords = (str: string, maxWords: number = 6) => {
@@ -151,7 +164,7 @@ export const ThreeTierHeadline: React.FC<{ cap: Caption; accent: string }> = ({ 
 
   let header = limitWords(cap.header?.trim() ?? "", 6);
   let keyword = limitWords(cap.keyword?.trim() ?? "", 6);
-  let sub = limitWords(cap.sub?.trim() ?? "", 6);
+  let sub = limitWords(cap.sub?.trim() ?? "", 9);
 
   if (!header && !keyword) {
     const raw = cap.text.trim();
@@ -159,7 +172,7 @@ export const ThreeTierHeadline: React.FC<{ cap: Caption; accent: string }> = ({ 
     if (lines.length >= 3) {
       header = limitWords(lines[0], 6);
       keyword = limitWords(lines[1], 6);
-      sub = limitWords(lines.slice(2).join(" "), 6);
+      sub = limitWords(lines.slice(2).join(" "), 9);
     } else if (lines.length === 2) {
       header = limitWords(lines[0], 6);
       keyword = limitWords(lines[1], 6);
@@ -178,21 +191,20 @@ export const ThreeTierHeadline: React.FC<{ cap: Caption; accent: string }> = ({ 
       <div
         style={{
           position: "absolute",
-          bottom: 0,
+          top: placement === "bottom" ? undefined : 0,
+          bottom: placement === "bottom" ? 0 : undefined,
           left: 0,
           right: 0,
-          height: "30%", // Strictly 30% bottom zone (Y: 70% -> 100%)
+          height: "30%", // Strictly 30% top/bottom zone
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center", // CHÍNH GIỮA 30% DƯỚI!
+          justifyContent: "center", // CHÍNH GIỮA 30% TRÊN / DƯỚI!
           alignItems: "center",
           padding: "0 30px",
         }}
       >
         <div
           style={{
-            transform: `translateY(${translateY}px) scale(${scale})`,
-            opacity,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -205,6 +217,8 @@ export const ThreeTierHeadline: React.FC<{ cap: Caption; accent: string }> = ({ 
           {header ? (
             <div
               style={{
+                transform: `translateY(${headerY}px) scale(${headerScale})`,
+                opacity: headerOpacity,
                 fontFamily: DISPLAY_FONT,
                 fontWeight: 800,
                 fontSize: 42 * recipe.textScale,
@@ -222,6 +236,8 @@ export const ThreeTierHeadline: React.FC<{ cap: Caption; accent: string }> = ({ 
           {formattedKeyword ? (
             <div
               style={{
+                transform: `translateY(${kwY}px) scale(${kwScale}) skewX(-3deg)`,
+                opacity: kwOpacity,
                 fontFamily: DISPLAY_FONT,
                 fontWeight: 950,
                 fontStyle: "italic",
@@ -231,7 +247,6 @@ export const ThreeTierHeadline: React.FC<{ cap: Caption; accent: string }> = ({ 
                 lineHeight: VI_SAFE_LINE_HEIGHT,
                 paddingTop: VI_DIACRITIC_PAD,
                 textShadow: `0 0 28px rgba(255,230,0,0.55), 0 8px 30px rgba(0,0,0,0.95)`,
-                transform: "skewX(-3deg)",
               }}
             >
               {formattedKeyword}
@@ -242,6 +257,8 @@ export const ThreeTierHeadline: React.FC<{ cap: Caption; accent: string }> = ({ 
           {sub ? (
             <div
               style={{
+                transform: `translateY(${headerY}px)`,
+                opacity: headerOpacity,
                 fontFamily: DISPLAY_FONT,
                 fontWeight: 700,
                 fontStyle: "italic",
@@ -367,12 +384,14 @@ export const SplitContrastHeadline: React.FC<{ cap: Caption; accent: string }> =
   const topOpacity = interpolate(topPop, [0, 1], [0, 1]);
   const topScale = interpolate(topPop, [0, 1], [0.88, 1]);
 
-  // Bottom line spring (staggered delay: starts at frame 14 ~470ms)
-  const bottomFrame = Math.max(0, frame - 14);
-  const bottomPop = spring({ frame: bottomFrame, fps, config: { damping: 14, mass: 0.5 } });
-  const bottomY = interpolate(bottomPop, [0, 1], [35, 0]);
-  const bottomOpacity = interpolate(bottomPop, [0, 1], [0, 1]);
-  const bottomScale = interpolate(bottomPop, [0, 1], [0.88, 1]);
+  // Bottom line spring: locked to audio-synced keyword delay!
+  const kwDelayFrames = getKeywordDelayFrames(cap, fps, 14);
+  const bottomFrame = frame - kwDelayFrames;
+  const isBottomActive = bottomFrame >= 0;
+  const bottomPop = isBottomActive ? spring({ frame: bottomFrame, fps, config: { damping: 14, mass: 0.5 } }) : 0;
+  const bottomY = isBottomActive ? interpolate(bottomPop, [0, 1], [35, 0]) : 35;
+  const bottomOpacity = isBottomActive ? interpolate(bottomPop, [0, 1], [0, 1]) : 0;
+  const bottomScale = isBottomActive ? interpolate(bottomPop, [0, 1], [0.88, 1]) : 0.88;
 
   const topText = cap.topText || cap.header || "NÓI CHUYỆN LIÊN TỤC";
   const bottomText = cap.bottomText || cap.keyword || cap.sub || "vừa đi vừa quay ONE-SHOT";

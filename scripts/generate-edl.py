@@ -576,8 +576,8 @@ def main():
                     help="overwrite edl.json even if it exists (discards manual edits)")
     ap.add_argument("--bgm", default="auto",
                     help="background music relative path under public/, 'auto' to choose by theme/text, or 'none' to disable")
-    ap.add_argument("--bgm-volume", type=float, default=0.22,
-                    help="BGM volume (default: 0.22 for talking-head)")
+    ap.add_argument("--bgm-volume", type=float, default=0.08,
+                    help="BGM volume (default: 0.08 for talking-head)")
     ap.add_argument("--no-bgm", action="store_true",
                     help="disable background music completely")
     ap.add_argument("--out-dir", default=str(OUT))
@@ -735,14 +735,32 @@ def main():
             # GAP C: scale capped at 1.1 (constraint ≤1.12)
             zooms.append({"type": "punch-in", "startMs": z0, "endMs": z0 + 2000, "scale": 1.1})
 
+    CAPCUT_TRANSITION_MAP = {
+        "glare-ii": {"durationMs": 533, "sound": "glare-burn", "volume": 0.90, "direction": "right"},
+        "phone-reveal": {"durationMs": 733, "sound": "phone-shutter-1", "volume": 0.95, "direction": "right"},
+        "paper-ball": {"durationMs": 667, "sound": "paper-ball-yt", "volume": 0.95, "direction": "right"},
+        "glitch": {"durationMs": 467, "sound": "glitch-cut", "volume": 0.85, "direction": "right"},
+        "fade-down": {"durationMs": 467, "sound": "fade-woosh", "volume": 0.90, "direction": "down"},
+        "blink": {"durationMs": 267, "sound": "click", "volume": 0.95, "direction": "right"},
+        "wave-right": {"durationMs": 533, "sound": "wave-sparkle", "volume": 0.90, "direction": "right"},
+        "swipe-left": {"durationMs": 333, "sound": "whoosh-fast", "volume": 0.95, "direction": "left"},
+        "comic-cut": {"durationMs": 667, "sound": "comic-paper-tear", "volume": 0.95, "direction": "right"},
+    }
+
     # Section transitions: light zoom + diverse viral transition at genuine label changes.
     # Accepts host_plan["transitions"] when supplied, else rotates 2-3 consistent transitions.
     transitions = []
     if host_plan.get("transitions"):
         transitions = host_plan["transitions"]
+        # sanitize directions (never allow 'center')
+        for t in transitions:
+            if t.get("direction") not in ("up", "down", "left", "right"):
+                t["direction"] = "right"
     else:
         if a.preset == "anh-sac-podcast":
             TRANSITION_PALETTE = ["debris-shatter", "quick-cut", "color-flash", "swipe-left"]
+        elif a.preset in ("thuy-style-nhieu-canh", "thuy-style-oneshot"):
+            TRANSITION_PALETTE = ["phone-reveal", "paper-ball", "comic-cut", "glare-ii", "wave-right", "glitch", "fade-down", "blink", "swipe-left"]
         else:
             TRANSITION_PALETTE = ["zoom-blur", "whip-pan", "swipe-left", "color-flash", "mask-circle"]
         prev_label = None
@@ -755,14 +773,17 @@ def main():
                     and section_zooms_added < 3
                     and start_ms - _last_section_ms >= 8000):
                 zooms.append({"type": "punch-in", "startMs": start_ms, "endMs": start_ms + 1500, "scale": 1.08})
-                t_start = max(0, start_ms - 180)
                 t_type = TRANSITION_PALETTE[section_zooms_added % len(TRANSITION_PALETTE)]
+                cfg = CAPCUT_TRANSITION_MAP.get(t_type)
+                t_dur = cfg["durationMs"] if cfg else 620
+                t_dir = cfg["direction"] if cfg else ("left" if t_type in ("swipe-left", "whip-pan") else "up")
+                t_start = max(0, start_ms - t_dur // 2)
                 transitions.append({
                     "type": t_type,
                     "startMs": t_start,
-                    "endMs": t_start + 620,
-                    "intensity": 0.8,
-                    "direction": "left" if t_type in ("swipe-left", "whip-pan") else "up",
+                    "endMs": t_start + t_dur,
+                    "intensity": 1.0,
+                    "direction": t_dir,
                     "colorRole": "accent" if section_zooms_added % 2 == 0 else "accent2",
                 })
                 section_zooms_added += 1
@@ -822,12 +843,20 @@ def main():
             b2_ms = int(dur * 0.72 * 1000)
             km1 = min(analysis.get("keyMoments", []), key=lambda k: abs(k.get("sec", 0) * 1000 - b1_ms), default=None)
             km2 = min(analysis.get("keyMoments", []), key=lambda k: abs(k.get("sec", 0) * 1000 - b2_ms), default=None)
+            broll_depth_variants = [
+                "dark-gradient", "dark-brick", "grid-caro", "radial-navy",
+                "concrete-grunge", "carbon-mesh", "paper-crumpled-black", "lens-bokeh"
+            ]
+            import random
+            v1 = random.choice(broll_depth_variants)
+            v2 = random.choice([v for v in broll_depth_variants if v != v1])
             graphics.append({
                 "type": "fullscreen-keyword",
                 "startMs": b1_ms,
                 "endMs": b1_ms + 2300,
                 "text": (km1.get("keyword") if km1 else "CẮT BỎ KHOẢNG LẶNG").upper(),
                 "subtitle": "Tự động loại bỏ dead air",
+                "bgVariant": v1,
             })
             if dur >= 28:
                 graphics.append({
@@ -836,6 +865,7 @@ def main():
                     "endMs": b2_ms + 2300,
                     "text": (km2.get("keyword") if km2 else "GIỮ TRỌN NỘI DUNG").upper(),
                     "subtitle": "Chỉ giữ lại ý chính",
+                    "bgVariant": v2,
                 })
 
     graphics = word_anchor(graphics, words)
@@ -882,11 +912,26 @@ def main():
             "effects": zooms,
             "transitions": transitions,
             "graphics": graphics,
-            "sfx": [
-                {"startMs": g["startMs"], "sound": "whoosh-fast", "volume": 0.7, "priority": 1, "preRollMs": 65}
-                for g in graphics if g.get("type") == "fullscreen-keyword"
-            ],
-            "broll": [],
+            "sfx": (
+                [
+                    {"startMs": g["startMs"], "sound": "whoosh-fast", "volume": 0.7, "priority": 1, "preRollMs": 65}
+                    for g in graphics if g.get("type") == "fullscreen-keyword"
+                ]
+                + host_plan.get("sfx", [])
+                + [
+                    {
+                        "startMs": t["startMs"],
+                        "sound": CAPCUT_TRANSITION_MAP[t["type"]]["sound"],
+                        "volume": CAPCUT_TRANSITION_MAP[t["type"]]["volume"],
+                        "priority": 1,
+                        "preRollMs": 0,
+                    }
+                    for t in transitions
+                    if t.get("type") in CAPCUT_TRANSITION_MAP
+                    and not any(s.get("sound") == CAPCUT_TRANSITION_MAP[t["type"]]["sound"] and abs(s.get("startMs", 0) - t["startMs"]) <= 120 for s in host_plan.get("sfx", []))
+                ]
+            ),
+            "broll": host_plan.get("broll", []),
         },
     }
 
@@ -905,7 +950,7 @@ def main():
                 "clipVolume": 1.0,
                 "loop": True,
                 "startSec": 0,
-                "fadeOutSec": 1.5,
+                "fadeOutSec": 2.0,
             }
         else:
             auto_track = auto_pick_bgm(full_text, theme_key, a.preset)
@@ -916,7 +961,7 @@ def main():
                     "clipVolume": 1.0,
                     "loop": True,
                     "startSec": 0,
-                    "fadeOutSec": 1.5,
+                    "fadeOutSec": 2.0,
                 }
                 print(f"      bgm: auto-selected soundtrack -> {auto_track} (vol={a.bgm_volume})")
 

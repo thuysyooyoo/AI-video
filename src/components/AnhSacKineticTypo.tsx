@@ -39,6 +39,35 @@ const SafeZoneWrapper: React.FC<{
 };
 
 /**
+ * Calculates audio-synced frame delay for punchline keyword:
+ * 1. If cap.keywordStartMs is provided: delayMs = keywordStartMs - startMs
+ * 2. Else scans cap.tokens matching the first word of keyword
+ * 3. Falls back to fallbackFrames (e.g. 5-7 frames) if not found or at start
+ */
+export const getKeywordDelayFrames = (cap: Caption, fps: number, fallbackFrames = 0): number => {
+  if (cap.keywordStartMs != null && cap.keywordStartMs >= cap.startMs) {
+    const delayMs = cap.keywordStartMs - cap.startMs;
+    return Math.max(0, Math.round((delayMs / 1000) * fps));
+  }
+  const kw = (cap.keyword || cap.highlightWord || "").trim().toLowerCase();
+  if (kw && cap.tokens && cap.tokens.length > 0) {
+    const kwWords = kw.split(/\s+/).map((w) => w.replace(/[^a-z0-9à-ỹ]/g, "")).filter(Boolean);
+    if (kwWords.length > 0) {
+      const targetWord = kwWords[0];
+      const matchToken = cap.tokens.find((t) => {
+        const clean = t.text.toLowerCase().replace(/[^a-z0-9à-ỹ]/g, "");
+        return clean === targetWord;
+      });
+      if (matchToken && matchToken.fromMs >= cap.startMs) {
+        const delayMs = matchToken.fromMs - cap.startMs;
+        return Math.max(0, Math.round((delayMs / 1000) * fps));
+      }
+    }
+  }
+  return fallbackFrames;
+};
+
+/**
  * 1. GlowAmbientHeadline (thuy-style-oneshot adaptation)
  * Massive floating topic/year/keyword centered cleanly in top 30% safe zone.
  * Clean, bold typography with solid crisp black stroke & shadow. No blurry bloom.
@@ -147,14 +176,18 @@ export const AsymmetricTrioHeadline: React.FC<{
   const midY = interpolate(midPop, [0, 1], [18, 0]);
   const midOpacity = interpolate(midPop, [0, 1], [0, 1]);
 
-  const rightFrame = Math.max(0, frame - 6);
-  const rightPop = spring({
-    frame: rightFrame,
-    fps,
-    config: { damping: 9, mass: 0.35, stiffness: 250 },
-  });
-  const rightScale = interpolate(rightPop, [0, 1], [1.25, 1]);
-  const rightOpacity = interpolate(rightPop, [0, 1], [0, 1]);
+  const kwDelayFrames = getKeywordDelayFrames(cap, fps, 6);
+  const rightFrame = frame - kwDelayFrames;
+  const isRightActive = rightFrame >= 0;
+  const rightPop = isRightActive
+    ? spring({
+        frame: rightFrame,
+        fps,
+        config: { damping: 9, mass: 0.35, stiffness: 250 },
+      })
+    : 0;
+  const rightScale = isRightActive ? interpolate(rightPop, [0, 1], [1.25, 1]) : 0.8;
+  const rightOpacity = isRightActive ? interpolate(rightPop, [0, 1], [0, 1]) : 0;
 
   const rawText = (cap.text || '').trim();
   let leftText = (cap.header || '').trim();
@@ -266,14 +299,18 @@ export const StackedContrastHeadline: React.FC<{
   const topY = interpolate(topPop, [0, 1], [-20, 0]);
   const topOpacity = interpolate(topPop, [0, 1], [0, 1]);
 
-  const bottomFrame = Math.max(0, frame - 5);
-  const bottomPop = spring({
-    frame: bottomFrame,
-    fps,
-    config: { damping: 9, mass: 0.36, stiffness: 230 },
-  });
-  const bottomScale = interpolate(bottomPop, [0, 1], [0.82, 1]);
-  const bottomOpacity = interpolate(bottomPop, [0, 1], [0, 1]);
+  const kwDelayFrames = getKeywordDelayFrames(cap, fps, 5);
+  const bottomFrame = frame - kwDelayFrames;
+  const isBottomActive = bottomFrame >= 0;
+  const bottomPop = isBottomActive
+    ? spring({
+        frame: bottomFrame,
+        fps,
+        config: { damping: 9, mass: 0.36, stiffness: 230 },
+      })
+    : 0;
+  const bottomScale = isBottomActive ? interpolate(bottomPop, [0, 1], [0.82, 1]) : 0.8;
+  const bottomOpacity = isBottomActive ? interpolate(bottomPop, [0, 1], [0, 1]) : 0;
 
   const topText = (cap.header || cap.sub || 'quy định trong').trim();
   const bottomText = (cap.keyword || cap.text || 'NGHỊ ĐỊNH 37').trim();
@@ -360,14 +397,18 @@ export const MultiBlockFlowHeadline: React.FC<{
   const midX = interpolate(midPop, [0, 1], [-25, 0]);
   const midOpacity = interpolate(midPop, [0, 1], [0, 1]);
 
-  const climaxFrame = Math.max(0, frame - 7);
-  const climaxPop = spring({
-    frame: climaxFrame,
-    fps,
-    config: { damping: 9, mass: 0.35, stiffness: 240 },
-  });
-  const climaxScale = interpolate(climaxPop, [0, 1], [1.25, 1]);
-  const climaxOpacity = interpolate(climaxPop, [0, 1], [0, 1]);
+  const kwDelayFrames = getKeywordDelayFrames(cap, fps, 7);
+  const climaxFrame = frame - kwDelayFrames;
+  const isClimaxActive = climaxFrame >= 0;
+  const climaxPop = isClimaxActive
+    ? spring({
+        frame: climaxFrame,
+        fps,
+        config: { damping: 9, mass: 0.35, stiffness: 240 },
+      })
+    : 0;
+  const climaxScale = isClimaxActive ? interpolate(climaxPop, [0, 1], [1.25, 1]) : 0.8;
+  const climaxOpacity = isClimaxActive ? interpolate(climaxPop, [0, 1], [0, 1]) : 0;
 
   const topText = (cap.header || 'HẠ XUỐNG').trim();
   const connectorText = (cap.sub || 'chỉ còn').trim();

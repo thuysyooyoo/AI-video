@@ -35,16 +35,22 @@ description: Tự động dựng video ngắn bằng TISA AI EDITOR AGENT chạy
 6. Sao chép video vào `public/raw/` với tên an toàn, không ghi đè file khác. Không sửa file gốc.
 7. Thông báo thời gian ước tính trước lệnh dài: talking-head khoảng 7–12 phút; render lại 5–7 phút; b-roll 1–3 phút, tùy máy và độ dài.
 8. Dựng theo workflow tương ứng. Với talking-head, ưu tiên `prefed`: lấy transcript bằng chế độ offline, tự lập `out/host-plan.json`, sinh EDL, kiểm tra rủi ro rồi render.
-   - **Tự động chọn nhạc nền (BGM)**: Nếu người dùng không gợi ý bài nhạc cụ thể, AI agent tự động phân tích chủ đề/cảm xúc video từ transcript để chọn 1 track tương ứng từ kho thư viện `public/bgm/` (4 nhóm: Kể chuyện cảm xúc, Giáo dục/Chia sẻ kiến thức, Vlog/Day in life, Động lực/Cảm xúc). Cấu hình vào trường `music` của `edl.json`: `src` tương đối, `volume: 0.20-0.25`, `clipVolume: 1.0` (giữ nguyên 100% âm lượng giọng nói), `loop: true`, `fadeOutSec: 1.5`.
+   - **Tự động chọn nhạc nền (BGM)**: Nếu người dùng không gợi ý bài nhạc cụ thể, AI agent tự động phân tích chủ đề/cảm xúc video từ transcript để chọn 1 track tương ứng từ kho thư viện `public/bgm/` (4 nhóm: Kể chuyện cảm xúc, Giáo dục/Chia sẻ kiến thức, Vlog/Day in life, Động lực/Cảm xúc). Cấu hình vào trường `music` của `edl.json`: `src` tương đối, `volume: 0.06-0.10 (mặc định: 0.08)`, `clipVolume: 1.0` (giữ nguyên 100% âm lượng giọng nói), `loop: true`, `fadeOutSec: 1.5`.
 9. Kiểm tra đầu ra: video tồn tại, dung lượng > 0, ffprobe đọc được, EDL hợp lệ và không có lỗi đỏ. Mở video hoặc hiển thị đường dẫn cho người dùng.
 10. Khi sửa nhỏ, chỉnh trực tiếp `out/edl.json` rồi `npm run render:edl`; không chạy lại toàn bộ pipeline. Chỉ dùng `--force-regen` khi người dùng muốn thay hướng lớn và đã hiểu bản chỉnh tay có thể bị thay.
 11. Khi chuyển sang clip mới, giữ bản trước trong `out/archive/` hoặc sao chép `out/final.mp4` sang tên riêng trước khi tiếp tục.
 
 ## Nguyên tắc chất lượng
 
+- **Quy tắc Cắt Gọt Triệt Để (Aggressive Trimming & Take Cleaning)**:
+  - Phân tích transcript & audio waveform để **cắt sạch 100% các câu nói vấp, nói lặp lại 2 lần (false starts)**. Chỉ giữ lại cú nói hoàn chỉnh và dứt khoát nhất.
+  - Cắt bỏ 100% lời nói ngoài lề, thoại hậu trường ("tắt máy đi ha", "làm lại câu này") và động tác với tay tắt máy.
+  - Cắt các khoảng lặng ngắt nghỉ > 0.35s, tăng tốc lời thoại 1.05–1.12× (chuẩn: 1.07×).
+- **Quy tắc Bắt Buộc keywordStartMs cho Headline**: Mọi khối Headline trong `tracks.graphics` BẮT BUỘC phải tính toán và truyền trường `keywordStartMs` từ transcript để đảm bảo kích hoạt cơ chế Hai Tầng Xuất Hiện (Two-Phase In).
+
 - Xem hạn mức graphics là trần, không phải chỉ tiêu. Mỗi graphic phải làm rõ ý, tạo nhịp hoặc dẫn mắt.
 - **Hierarchical Summary Captions & Scrim làm mờ 30%**: Mặc định dùng caption tóm tắt 3 tầng phân cấp (`header` bold trắng / `keyword` cực lớn in hoa nghiêng có ngoặc kép / `sub` nghiêng trắng). Phủ lớp backdrop-blur (14px) và vignette tối dần về đáy ở 30-36% chân khung hình giúp chữ sắc nét, tương phản cao.
-- **B-roll Kinetic Keyword 100% Full Khung**: Chèn 1–2 B-roll toàn màn hình (1080×1920) chạy chữ keyword cực lớn trên nền tối cinematic tại các điểm chốt/bước chuyển quan trọng của người nói kèm SFX whoosh.
+- **B-roll Kinetic Keyword 100% Full Khung (Kho Nền Chiều Sâu Đa Dạng)**: Chèn 1–2 B-roll toàn màn hình (1080×1920) chạy chữ keyword cực lớn tại các điểm chốt/bước chuyển quan trọng kèm SFX whoosh. TUYỆT ĐỐI KHÔNG dùng cố định 1 mẫu duy nhất hay nền đen tuyền đơn điệu đứng yên; BẮT BUỘC luân phiên sử dụng kho 9+ mẫu nền chiều sâu điện ảnh (`dark-gradient-depth.png`, `dark-brick-wall.png`, `grid-caro.png`, `paper-crumpled-black.png`, `concrete-dark-grunge.png`, `radial-navy-glow.png`, `carbon-mesh-studio.png`, `lens-bokeh-abstract.png`, hoặc `blurred-speaker`) kết hợp chuyển động nhẹ Ken Burns slow zoom (1.02x -> 1.09x) và micro parallax drift để khung hình luôn sống động, điện ảnh.
 - **Tuyệt đối KHÔNG emoji**: Loại bỏ 100% emoji khỏi toàn bộ caption, graphic, callout, title, CTA để đảm bảo thẩm mỹ chuyên nghiệp, sang trọng chuẩn truyền thông cao cấp.
 - Giữ caption đúng chính tả tiếng Việt, đồng bộ token, nằm trong vùng an toàn và dễ đọc trên điện thoại.
 - Hook 0–3 giây phải rõ; CTA ngắn đặt trên vùng an toàn đầu không che mặt người nói; không thêm dữ liệu hoặc tuyên bố không có trong lời nói.
@@ -57,7 +63,7 @@ description: Tự động dựng video ngắn bằng TISA AI EDITOR AGENT chạy
   - AI phải **suy luận ngữ cảnh từng câu nói** để chọn SFX phù hợp nhất từ 6 nhóm chức năng: *Thao tác công nghệ/UI*, *Chuyển cảnh/Lướt chữ*, *Cinematic/Kịch tính*, *Foley đời sống*, *Hài hước/Comic Meme*, *Game 8-Bit/CTA*.
   - → **Bắt buộc tra cứu bảng đặc tính âm thanh & ứng dụng chuẩn xác** tại [references/sfx-sound-design.md](references/sfx-sound-design.md).
   - **Quy tắc phối âm**: Hai SFX phát liên tiếp KHÔNG ĐƯỢC trùng nhau. Giữ khoảng cách tối thiểu giữa 2 SFX từ `1.2s – 1.8s` để tránh mệt tai người xem. Pre-roll 65ms (âm thanh đi trước đỉnh hình ảnh 40–65ms) và cân bằng âm lượng (0.45 – 0.75) để âm thanh sắc bén mà tuyệt đối không át tiếng người nói.
-- **Nhạc nền (BGM)**: Sử dụng kho nhạc nền chuẩn local có sẵn trong `public/bgm/` (đã phân loại theo 4 chủ đề TikTok/Reels triệu view). Tự động lấy nhạc nền phù hợp nếu người dùng không yêu cầu bài cụ thể; tuyệt đối giữ `clipVolume: 1.0` và đặt `volume` nhạc nền từ `0.18–0.25` để tôn giọng người nói.
+- **Nhạc nền (BGM) & Tỉ lệ âm lượng**: Tự động chọn track phù hợp từ kho `public/bgm/`. BẮT BUỘC KHÓA CỨNG TỈ LỆ TƯƠNG QUAN: BGM/Voice luôn nằm trong dải `0.05 – 0.08` (chuẩn: $V_{bgm} = V_{voice} 	imes 0.06$, tối đa không quá 0.09) và fade-out 2.0s cuối video. SFX dao động `0.35 – 0.75 × V_{voice}`.
 - Không gửi video ra mạng, đăng bài hoặc ghi đè nguồn nếu người dùng chưa yêu cầu.
 
 ## Mẫu kết thúc mỗi vòng render
