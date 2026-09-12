@@ -200,6 +200,40 @@ def main():
             if not has_sfx:
                 warn(warnings, "transition-missing-sfx", f"Transition {i} '{t_type}'@{t_start} lacks matching SFX '{expected_sound}' in tracks.sfx.")
 
+    # Check Sentence-Completion Visual Beats & Dead Visual Zones (Khoảng chết thị giác)
+    visual_intervals = []
+    for g in graphics:
+        visual_intervals.append((g.get("startMs", 0), g.get("endMs", 0)))
+    for b in brolls:
+        visual_intervals.append((b.get("startMs", 0), b.get("endMs", 0)))
+    for t in transitions:
+        visual_intervals.append((t.get("startMs", 0), t.get("endMs", 0)))
+    visual_intervals.sort(key=lambda x: x[0])
+
+    merged_visual = []
+    for s, e in visual_intervals:
+        if not merged_visual:
+            merged_visual.append([s, e])
+        else:
+            if s <= merged_visual[-1][1] + 300:
+                merged_visual[-1][1] = max(merged_visual[-1][1], e)
+            else:
+                merged_visual.append([s, e])
+
+    MAX_ALLOWED_VISUAL_GAP_MS = 4500  # 4.5s max threshold
+    if is_thuy and captions and merged_visual:
+        for i in range(len(merged_visual) - 1):
+            g_start = merged_visual[i][1]
+            g_end = merged_visual[i+1][0]
+            if g_end - g_start > MAX_ALLOWED_VISUAL_GAP_MS:
+                spoken = [c for c in captions if c.get("startMs", 0) >= g_start - 200 and c.get("endMs", 0) <= g_end + 200]
+                if len(spoken) >= 2:
+                    snippet = " ".join(c.get("text", "") for c in spoken)[:70]
+                    gap_sec = (g_end - g_start) / 1000.0
+                    warn(warnings, "dead-visual-zone",
+                         f"Khoảng chết thị giác {g_start}ms - {g_end}ms ({gap_sec:.1f}s) không có hiệu ứng (B-roll, Headline, hoặc Transition). "
+                         f"Câu thoại bị trôi: '{snippet}...'. Bắt buộc phải gắn hiệu ứng thị giác cho mỗi câu nói hoàn chỉnh.")
+
     out = {
         "edl": str(edl_path),
         "graphics": len(graphics),

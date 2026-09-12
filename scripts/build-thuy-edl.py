@@ -71,6 +71,39 @@ def build_edl():
             'anchor': 'top'
         },
         {
+            'type': 'split-contrast',
+            'startMs': 3800,
+            'endMs': 7200,
+            'header': 'THẤY GIÁ ĐANG RẺ',
+            'keyword': 'ĐỪNG VỘI XUỐNG TIỀN',
+            'sub': 'Phải kiểm tra thực tế',
+            'topText': 'THẤY GIÁ ĐANG RẺ',
+            'bottomText': 'ĐỪNG VỘI XUỐNG TIỀN',
+            'keywordStartMs': 4920,
+            'anchor': 'top'
+        },
+        {
+            'type': 'asymmetric-trio',
+            'startMs': 7600,
+            'endMs': 11400,
+            'header': 'LỜI HỨA MÔI GIỚI',
+            'keyword': 'QUY HOẠCH ĐƯỜNG LỚN',
+            'sub': 'sắp tới có',
+            'keywordStartMs': 10480,
+            'anchor': 'top'
+        },
+        {
+            'type': 'stat-punch',
+            'startMs': 11800,
+            'endMs': 15400,
+            'header': 'QUY TRÌNH THỰC CHIẾN',
+            'keyword': '4 YẾU TỐ SỐNG CÒN',
+            'sub': 'Trước khi quyết định mua',
+            'value': 4,
+            'keywordStartMs': 14100,
+            'anchor': 'top'
+        },
+        {
             'type': '3-tier',
             'startMs': 15800,
             'endMs': 25500,
@@ -181,6 +214,9 @@ def build_edl():
     sfx = [
         {'startMs': 200, 'sound': 'kobe-woosh', 'volume': 0.55, 'preRollMs': 65},
         {'startMs': 620, 'sound': 'chime-ding', 'volume': 0.65, 'preRollMs': 65},
+        {'startMs': 4920, 'sound': 'pop-soft', 'volume': 0.55, 'preRollMs': 65},
+        {'startMs': 10480, 'sound': 'highlight', 'volume': 0.60, 'preRollMs': 65},
+        {'startMs': 14100, 'sound': 'magic-reveal', 'volume': 0.65, 'preRollMs': 65},
         {'startMs': 17180, 'sound': 'pop-soft', 'volume': 0.55, 'preRollMs': 65},
         {'startMs': 18150, 'sound': 'phone-shutter-1', 'volume': 0.65, 'preRollMs': 65},
         {'startMs': 28360, 'sound': 'tech-notification', 'volume': 0.55, 'preRollMs': 65},

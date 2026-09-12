@@ -872,6 +872,85 @@ def main():
     graphics.sort(key=lambda x: x["startMs"])
     graphics = dedup_overlap(graphics, dur)
 
+    # === SENTENCE-COMPLETION VISUAL BEATS HEALER (HARD-LOCKED) ===
+    # Detect any speech gap > 4500ms without visual event (graphics, broll, transitions)
+    # and automatically generate semantic visual beat based on sentence intent.
+    if a.preset in ("thuy-style-nhieu-canh", "thuy-style-oneshot"):
+        all_visuals = [(g["startMs"], g["endMs"]) for g in graphics]
+        all_visuals += [(b.get("startMs", 0), b.get("endMs", 0)) for b in host_plan.get("broll", [])]
+        all_visuals += [(t.get("startMs", 0), t.get("endMs", 0)) for t in transitions]
+        all_visuals.sort(key=lambda x: x[0])
+
+        merged_vis = []
+        for s_v, e_v in all_visuals:
+            if not merged_vis:
+                merged_vis.append([s_v, e_v])
+            else:
+                if s_v <= merged_vis[-1][1] + 300:
+                    merged_vis[-1][1] = max(merged_vis[-1][1], e_v)
+                else:
+                    merged_vis.append([s_v, e_v])
+
+        filler_graphics = []
+        for i in range(len(merged_vis) - 1):
+            g_start = merged_vis[i][1]
+            g_end = merged_vis[i+1][0]
+            if g_end - g_start > 4500:
+                gap_words = [w for w in words if w["startMs"] >= g_start - 200 and w["endMs"] <= g_end + 200]
+                if len(gap_words) >= 6:
+                    sentence_text = " ".join(w["text"] for w in gap_words)
+                    s_lower = sentence_text.lower()
+                    mid_idx = len(gap_words) // 2
+                    w_anchor = gap_words[mid_idx]
+                    kw_start = w_anchor["startMs"]
+                    f_start = gap_words[0]["startMs"]
+                    f_end = min(g_end - 200, f_start + 3600)
+
+                    # Semantic intent analysis
+                    import re
+                    digits = re.findall(r"\d+", sentence_text)
+                    if digits or any(k in s_lower for k in ("nghị định", "quy định", "tiêu chí", "yếu tố", "lần")):
+                        val = int(digits[0]) if digits else 1
+                        filler_graphics.append({
+                            "type": "stat-punch",
+                            "startMs": f_start,
+                            "endMs": f_end,
+                            "header": "TIÊU CHUẨN ĐỊNH LƯỢNG",
+                            "keyword": clamp_words(sentence_text.upper(), 32),
+                            "sub": "Lưu ý quan trọng cần nhớ",
+                            "value": val,
+                            "keywordStartMs": kw_start,
+                            "anchor": "top",
+                        })
+                    elif any(k in s_lower for k in ("nhưng", "đừng", "tưởng", "trước", "bây giờ", "sai lầm", "rẻ", "lỗ")):
+                        filler_graphics.append({
+                            "type": "split-contrast",
+                            "startMs": f_start,
+                            "endMs": f_end,
+                            "header": "CẢNH BÁO RỦI RO",
+                            "topText": "CẨN TRỌNG THỰC TẾ",
+                            "bottomText": clamp_words(sentence_text.upper(), 28),
+                            "keyword": clamp_words(sentence_text.upper(), 28),
+                            "sub": "Đừng vội vàng quyết định",
+                            "keywordStartMs": kw_start,
+                            "anchor": "top",
+                        })
+                    else:
+                        filler_graphics.append({
+                            "type": "asymmetric-trio",
+                            "startMs": f_start,
+                            "endMs": f_end,
+                            "header": "LƯU Ý CỐT LÕI",
+                            "sub": "thực tế",
+                            "keyword": clamp_words(w_anchor["text"].upper(), 20),
+                            "keywordStartMs": kw_start,
+                            "anchor": "top",
+                        })
+        if filler_graphics:
+            graphics.extend(filler_graphics)
+            graphics.sort(key=lambda x: x["startMs"])
+            graphics = dedup_overlap(graphics, dur)
+
     # face-aware layout: where is the speaker? -> place graphics in the free zone
     face_zone, face_cy = "top", 32.0
     fz_path = out_dir / "face-zones.json"
