@@ -200,6 +200,22 @@ def main():
             if not has_sfx:
                 warn(warnings, "transition-missing-sfx", f"Transition {i} '{t_type}'@{t_start} lacks matching SFX '{expected_sound}' in tracks.sfx.")
 
+            # Section-Boundary Contract: Transitions must NOT be forcibly coupled to B-roll start times
+            if is_thuy:
+                for b_idx, b in enumerate(brolls):
+                    b_start = b.get("startMs", 0)
+                    if abs(t_start - b_start) <= 450:
+                        warn(warnings, "transition-forced-on-broll",
+                             f"Transition {i} '{t_type}'@{t_start}ms bị gán ép vào thời điểm B-roll {b_idx} bắt đầu ({b_start}ms). "
+                             f"Quy tắc bất di bất dịch: B-roll AI là lớp cutaway minh họa hiển thị êm ái, không được ép chèn chuyển cảnh nặng. "
+                             f"Chuyển cảnh chỉ dùng khi đổi phân đoạn nội dung lớn (Intro -> Các yếu tố -> CTA).")
+
+    # Ensure videos >= 30s in Thuy styles have transitions marking macro section boundaries
+    if is_thuy and duration_ms >= 30000 and len(transitions) < 2:
+        warn(warnings, "missing-section-transitions",
+             f"Video dài {duration_ms/1000:.1f}s theo phong cách Thuy Style nhưng chỉ có {len(transitions)} chuyển cảnh. "
+             f"Bắt buộc phải có chuyển cảnh CapCut 2-layer tại các ranh giới phân đoạn nội dung lớn (Intro -> Các luận điểm -> Kết bài).")
+
     # Check Sentence-Completion Visual Beats & Dead Visual Zones (Khoảng chết thị giác)
     visual_intervals = []
     for g in graphics:

@@ -4,9 +4,11 @@ Tài liệu này thuộc cơ sở tri thức (Knowledge Base) cốt lõi của d
 
 > [!CAUTION]
 > **QUY TẮC BẮT BUỘC TUYỆT ĐỐI (NON-NEGOTIABLE RULE)**:
-> 1. Khi dựng video có nhu cầu sử dụng hiệu ứng chuyển cảnh (transitions) giữa các đoạn cắt, đổi cảnh, phân đoạn hoặc xuất hiện B-roll, **CHỈ ĐƯỢP PHÉP SỬ DỤNG DUY NHẤT 1 TRONG 9 HIỆU ỨNG CHUYỂN CẢNH CAPCUT DƯỚI ĐÂY KÈM SFX CỐ ĐỊNH TƯƠNG ỨNG**.
-> 2. **TUYỆT ĐỐI KHÔNG DÙNG BẤT KỲ HIỆU ỨNG TỰ SINH RA NÀO KHÁC** đối với các hiệu ứng chuyển cảnh (nghiêm cấm mọi hiệu ứng tự chế hoặc không nằm trong danh mục 9 hiệu ứng chuẩn).
-> 3. Mã nguồn và đăng ký trung tâm được lưu trữ chuẩn hóa tại:
+> 1. **MỤC ĐÍCH CHUYỂN CẢNH**: Chuyển cảnh CapCut phục vụ việc **chuyển đổi giữa các phân đoạn nội dung lớn (Section Boundaries)**: từ Giới thiệu sang các Luận điểm/Yếu tố, giữa từng Luận điểm, và từ Luận điểm cuối sang CTA/Kết bài. Neo trọn vẹn tại khoảng lặng (silence pause) giữa các câu.
+> 2. **B-ROLL KHÔNG ÉP CHUYỂN CẢNH**: B-roll AI là hình ảnh minh họa ngữ cảnh (cutaway), hiển thị êm ái với Ken Burns slow zoom (1.02× -> 1.09×), **TUYỆT ĐỐI KHÔNG ép chèn hiệu ứng chuyển cảnh nặng ở mỗi lần B-roll xuất hiện**.
+> 3. Khi chuyển cảnh, **CHỈ ĐƯỢC PHÉP SỬ DỤNG DUY NHẤT 1 TRONG 9 HIỆU ỨNG CAPCUT CHUẨN DƯỚI ĐÂY KÈM SFX CỐ ĐỊNH TƯƠNG ỨNG**.
+> 4. **TUYỆT ĐỐI KHÔNG DÙNG BẤT KỲ HIỆU ỨNG TỰ SINH RA NÀO KHÁC**.
+> 5. Mã nguồn và đăng ký trung tâm được lưu trữ chuẩn hóa tại:
 >    - **Registry**: `src/components/capcut-transitions-registry.ts`
 >    - **Core Transitions Component**: `src/components/CapCutTwoLayerTransitions.tsx`
 >    - **Tài liệu chi tiết**: `docs/CAPCUT_TRANSITIONS_SFX_RULES.md`
