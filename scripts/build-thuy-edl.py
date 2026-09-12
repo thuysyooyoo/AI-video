@@ -95,7 +95,7 @@ def build_edl():
         {
             'type': 'stat-punch',
             'startMs': 11800,
-            'endMs': 15400,
+            'endMs': 14950,
             'header': 'QUY TRÌNH THỰC CHIẾN',
             'keyword': '4 YẾU TỐ SỐNG CÒN',
             'sub': 'Trước khi quyết định mua',
@@ -116,7 +116,7 @@ def build_edl():
         {
             'type': '3-tier',
             'startMs': 27000,
-            'endMs': 36500,
+            'endMs': 36400,
             'header': 'YẾU TỐ 2',
             'keyword': 'MÔI TRƯỜNG XUNG QUANH',
             'sub': 'Dân cư & điện đường trường trạm',
@@ -126,7 +126,7 @@ def build_edl():
         {
             'type': '3-tier',
             'startMs': 37600,
-            'endMs': 46800,
+            'endMs': 46200,
             'header': 'YẾU TỐ 3',
             'keyword': 'PHÁP LÝ THỰC TẾ',
             'sub': 'Khớp giấy tờ vị trí & ranh giới',
@@ -166,67 +166,72 @@ def build_edl():
         }
     ]
 
-    # Brand new CapCut transitions (phone-reveal, paper-ball, comic-cut) aligned to scene cuts
+    # Authentic CapCut transitions strictly marking Macro Section Boundaries:
+    # 1. Intro -> Yếu tố 1 (15000ms - 15733ms)
+    # 2. Yếu tố 1 -> Yếu tố 2 (26000ms - 26667ms)
+    # 3. Yếu tố 2 -> Yếu tố 3 (36500ms - 37167ms)
+    # 4. Yếu tố 3 -> Yếu tố 4 (46400ms - 46933ms)
+    # 5. Yếu tố 4 -> Phần Kết CTA (71200ms - 71733ms)
     transitions = [
         {
             'type': 'phone-reveal',
-            'startMs': 18150,
-            'endMs': 18883,
+            'startMs': 15000,
+            'endMs': 15733,
             'direction': 'right',
             'intensity': 1,
             'colorRole': 'accent'
         },
         {
             'type': 'paper-ball',
-            'startMs': 29200,
-            'endMs': 29867,
+            'startMs': 26000,
+            'endMs': 26667,
             'direction': 'right',
             'intensity': 1,
             'colorRole': 'highlight'
         },
         {
             'type': 'comic-cut',
-            'startMs': 39700,
-            'endMs': 40367,
+            'startMs': 36500,
+            'endMs': 37167,
             'direction': 'right',
             'intensity': 1,
             'colorRole': 'accent2'
         },
         {
-            'type': 'phone-reveal',
-            'startMs': 61700,
-            'endMs': 62433,
+            'type': 'glare-ii',
+            'startMs': 46400,
+            'endMs': 46933,
             'direction': 'right',
             'intensity': 1,
             'colorRole': 'accent'
         },
         {
-            'type': 'paper-ball',
-            'startMs': 71700,
-            'endMs': 72367,
+            'type': 'wave-right',
+            'startMs': 71200,
+            'endMs': 71733,
             'direction': 'right',
             'intensity': 1,
             'colorRole': 'highlight'
         }
     ]
 
-    # Fresh SFX with strict volume ratios & anti-bleed matching transitions
+    # Fresh SFX with strict volume ratios & anti-bleed matching transitions 1:1
     sfx = [
         {'startMs': 200, 'sound': 'kobe-woosh', 'volume': 0.55, 'preRollMs': 65},
         {'startMs': 620, 'sound': 'chime-ding', 'volume': 0.65, 'preRollMs': 65},
         {'startMs': 4920, 'sound': 'pop-soft', 'volume': 0.55, 'preRollMs': 65},
         {'startMs': 10480, 'sound': 'highlight', 'volume': 0.60, 'preRollMs': 65},
         {'startMs': 14100, 'sound': 'magic-reveal', 'volume': 0.65, 'preRollMs': 65},
+        {'startMs': 15000, 'sound': 'phone-shutter-1', 'volume': 0.65, 'preRollMs': 65},
         {'startMs': 17180, 'sound': 'pop-soft', 'volume': 0.55, 'preRollMs': 65},
-        {'startMs': 18150, 'sound': 'phone-shutter-1', 'volume': 0.65, 'preRollMs': 65},
+        {'startMs': 26000, 'sound': 'paper-ball-yt', 'volume': 0.65, 'preRollMs': 65},
         {'startMs': 28360, 'sound': 'tech-notification', 'volume': 0.55, 'preRollMs': 65},
-        {'startMs': 29200, 'sound': 'paper-ball-yt', 'volume': 0.65, 'preRollMs': 65},
+        {'startMs': 36500, 'sound': 'comic-paper-tear', 'volume': 0.65, 'preRollMs': 65},
         {'startMs': 38200, 'sound': 'game-correct', 'volume': 0.65, 'preRollMs': 65},
-        {'startMs': 39700, 'sound': 'comic-paper-tear', 'volume': 0.65, 'preRollMs': 65},
+        {'startMs': 46400, 'sound': 'glare-burn', 'volume': 0.65, 'preRollMs': 65},
         {'startMs': 52740, 'sound': 'sparkle', 'volume': 0.60, 'preRollMs': 65},
-        {'startMs': 61700, 'sound': 'phone-shutter-1', 'volume': 0.65, 'preRollMs': 65},
         {'startMs': 64500, 'sound': 'pop-soft', 'volume': 0.55, 'preRollMs': 65},
-        {'startMs': 71700, 'sound': 'paper-ball-yt', 'volume': 0.65, 'preRollMs': 65},
+        {'startMs': 71200, 'sound': 'wave-sparkle', 'volume': 0.65, 'preRollMs': 65},
         {'startMs': 72300, 'sound': 'bell-bright', 'volume': 0.65, 'preRollMs': 65}
     ]
 

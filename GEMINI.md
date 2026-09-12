@@ -66,12 +66,14 @@ Tuyệt đối KHÔNG khóa cứng một giá trị cố định thô, mà BẮT
   - Tuyệt đối không dùng nền đen tuyền phẳng đứng yên đơn điệu trừ khi người dùng yêu cầu rõ.
 - **Bộ Chuyển Cảnh CapCut 2-Layer Độc Quyền (Two-Layer Transitions Contract)**:
   - **TUYỆT ĐỐI KHÔNG dùng Mock Overlay 1 lớp (Single-Layer CSS Draw)**: Mọi chuyển cảnh trong video phải chạy qua Engine `CapCutTwoLayerTransitions` với đầy đủ 2 tầng video thật (`clipA` = cảnh trước, `clipB` = cảnh sau, `startFromA`, `startFromB` nối tiếp liền mạch).
-  - **Quy Tắc Vị Trí Cắt Cảnh (Cut-Point Placement Contract)**:
-    - Chuyển cảnh CapCut là cầu nối giữa 2 cảnh quay khác nhau. **TUYỆT ĐỐI KHÔNG đặt chuyển cảnh lơ lửng giữa câu nói của A-roll khi không có đổi cảnh**.
-    - Vị trí đặt chuyển cảnh BẮT BUỘC neo tại đúng **Điểm Cắt Cảnh (Cut Point)**:
-      + Vào B-roll: `startMs = broll.startMs - (durationMs / 2)` (Tâm chuyển cảnh trùng khớp frame B-roll bắt đầu).
-      + Thoát B-roll: `startMs = broll.endMs - (durationMs / 2)` (Tâm chuyển cảnh trùng khớp frame B-roll kết thúc, trở về người nói).
-      + Cắt đổi phân cảnh lớn (Jump-cut sang góc máy khác hoặc ý khác): neo tâm tại timestamp cắt phân cảnh.
+  - **Quy Tắc Vị Trí Chuyển Cảnh Theo Phân Đoạn Nội Dung (Section-Boundary Transition Contract)**:
+    - **B-roll KHÔNG BẮT BUỘC CÓ CHUYỂN CẢNH**: Lớp B-roll AI là hình ảnh minh họa ngữ cảnh (cutaway), hiển thị êm ái với chuyển động Ken Burns slow zoom (1.02× -> 1.09×), TUYỆT ĐỐI KHÔNG ép chèn hiệu ứng chuyển cảnh nặng mỗi khi B-roll xuất hiện nếu đang ở giữa câu nói/ý của diễn giả.
+    - **Chuyển Cảnh Phục Vụ Chuyển Đổi Phân Đoạn Nội Dung Lớn (Macro Section Boundary)**:
+      Chuyển cảnh CapCut BẮT BUỘC được kích hoạt khi **kết thúc một phần nói để bước sang phần nói tiếp theo**:
+      + Chuyển từ phần Giới thiệu chung sang các Luận điểm/Yếu tố chính (Intro -> Luận điểm 1).
+      + Chuyển cảnh bắt đầu giữa từng Luận điểm/Yếu tố (Yếu tố 1 -> Yếu tố 2, Yếu tố 2 -> Yếu tố 3, Yếu tố 3 -> Yếu tố 4,...).
+      + Chuyển từ Luận điểm cuối cùng sang Phần Kết luận / Kêu gọi hành động (Yếu tố cuối -> CTA / Kết bài).
+    - **Vị Trí Căn Chỉnh (Timing)**: Neo trọn vẹn tại khoảng lặng (silence pause) giữa câu kết thúc phân đoạn trước và từ mở đầu của phân đoạn tiếp theo, kết thúc dứt khoát trước hoặc đúng onset của từ đầu câu mới để bảo đảm giọng nói đanh thép không bị đè lấn.
   - **Bảng 9 Hiệu Ứng Khóa Cứng Thời Lượng, Hướng và SFX (Bắt buộc tuân thủ 100%)**:
     1. `glare-ii`: 16 frames (533ms), direction: `"right"`, SFX: `glare-burn` (vol: 0.90).
     2. `phone-reveal`: 22 frames (733ms), direction: `"right"`, SFX: `phone-shutter-1` (vol: 0.95).

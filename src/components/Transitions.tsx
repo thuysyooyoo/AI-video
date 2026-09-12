@@ -1010,7 +1010,7 @@ const TransitionItemWrapper: React.FC<{
   let clipA = defaultClip;
   let clipB = defaultClip;
   let startFromA = fromFrame;
-  let startFromB = 0;
+  let startFromB = fromFrame;
 
   const transMid = (t.startMs + t.endMs) / 2;
   const enteringBroll = brolls.find((b) => Math.abs(b.startMs - transMid) <= 1500 && b.src);
